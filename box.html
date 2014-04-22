@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>WebGL/Three.js Step Tutorial</title>
+    <style>
+      body {
+        margin: 0px;
+        background-color: #fff;
+        overflow: hidden;
+      }
+    </style>
+  </head>
+  <body>
+    <script src="three.js/build/three.min.js"></script>
+<script>
+var camera;
+var scene;
+var renderer;
+var mesh;
+ 
+init();
+animate();
+ 
+function init() {
+ 
+    scene = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000);
+ 
+    var light = new THREE.DirectionalLight( 0xffffff );
+    light.position.set( 0, 1, 1 ).normalize();
+    scene.add(light);
+ 
+    var geometry = new THREE.CubeGeometry( 10, 10, 10);
+    //var material = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 } );
+    var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/crate.jpg') } );
+
+    mesh = new THREE.Mesh(geometry, material );
+    mesh.position.z = -50;
+    scene.add( mesh );
+ 
+    renderer = new THREE.WebGLRenderer();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
+ 
+    window.addEventListener( 'resize', onWindowResize, false );
+ 
+    render();
+}
+ 
+function animate() {
+    mesh.rotation.x += .04;
+    mesh.rotation.y += .02;
+ 
+    render();
+    requestAnimationFrame( animate );
+}
+ 
+function render() {
+    renderer.render( scene, camera );
+}
+ 
+function onWindowResize() {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    render();
+}
+</script>
+  </body>
+</html>

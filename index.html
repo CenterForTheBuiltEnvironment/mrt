@@ -1,0 +1,308 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<title>MRTCalc</title>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+		<style>
+			body {
+				font-family: Monospace;
+				background-color: #f0f0f0;
+				margin: 0px;
+				overflow: hidden;
+				color: purple;
+			}
+
+			a {
+				color: red;
+			}
+		</style>
+	</head>
+	<body>
+
+	  <script type="text/javascript" src="js/libs/three.js/build/three.min.js"></script>
+		<script type="text/javascript" src="js/libs/three.js/src/extras/cameras/CombinedCamera.js"></script>
+		<script type="text/javascript" src="js/libs/three.js/examples/js/controls/OrbitControls.js"></script>
+		<script type="text/javascript" src="js/libs/stats.min.js"></script>
+    <script type="text/javascript" src="js/libs/dat-gui/build/dat.gui.min.js"></script>
+    <script type="text/javascript" src="js/libs/underscore.min.js"></script>
+    
+		<script>
+
+      // example of interactive cubes: file:///Users/hoyt/Documents/Projects/mrt/three.js/examples/webgl_interactive_cubes_gpu.html
+
+			var container, stats;
+			var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
+			var surfaces = [];
+      var mouse = new THREE.Vector2();
+
+      var myZone = [
+          { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
+                         {'x': 0, 'y': 100, 'z': 0},
+                         {'x': 0, 'y': 100, 'z': 100},
+                         {'x': 0, 'y': 0, 'z': 100}],
+            'radiant_t': 20.0,
+            'emissivity': 0.9,
+            'children': [
+              { 'vertices': [{'x': 0, 'y': 20, 'z': 20},
+                             {'x': 0, 'y': 80, 'z': 20},
+                             {'x': 0, 'y': 80, 'z': 80},
+                             {'x': 0, 'y': 20, 'z': 80}],
+                'radiant_t': 30.0,
+                'emissivity': 0.9,
+              },
+            ],
+          },
+          { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
+                         {'x': 100, 'y': 0, 'z': 0},
+                         {'x': 100, 'y': 0, 'z': 100},
+                         {'x': 0, 'y': 0, 'z': 100}],
+            'radiant_t': 20.0,
+            'emissivity': 0.9,
+          },
+          { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
+                         {'x': 100, 'y': 0, 'z': 0},
+                         {'x': 100, 'y': 100, 'z': 0},
+                         {'x': 0, 'y': 100, 'z': 0}],
+            'radiant_t': 20.0,
+            'emissivity': 0.9,
+          },
+          { 'vertices': [{'x': 100, 'y': 0, 'z': 0},
+                         {'x': 100, 'y': 100, 'z': 0},
+                         {'x': 100, 'y': 100, 'z': 100},
+                         {'x': 100, 'y': 0, 'z': 100}],
+             'radiant_t': 20.0,
+             'emissivity': 0.9,
+          },
+          { 'vertices': [{'x': 0, 'y': 100, 'z': 0},
+                         {'x': 100, 'y': 100, 'z': 0},
+                         {'x': 100, 'y': 100, 'z': 100},
+                         {'x': 0, 'y': 100, 'z': 100}],
+             'radiant_t': 20.0,
+             'emissivity': 0.9,
+          },
+          { 'vertices': [{'x': 0, 'y': 0, 'z': 100},
+                         {'x': 100, 'y': 0, 'z': 100},
+                         {'x': 100, 'y': 100, 'z': 100},
+                         {'x': 0, 'y': 100, 'z': 100}],
+             'radiant_t': 20.0,
+             'emissivity': 0.9,
+          },
+      ];
+
+      function wallPanelGeometry(vertices){
+        var Nv = vertices.length;
+        var geometry = new THREE.Geometry();
+        for (var j = 0; j < Nv; j++){
+          geometry.vertices.push(new THREE.Vector3( vertices[j].x, vertices[j].y, vertices[j].z ))
+        }
+        for (var j = 0; j < Nv - 2; j++){
+          var face = new THREE.Face3( 0, j+1, j+2 )
+          geometry.faces.push(face);
+        }
+        return geometry;
+      }
+      
+      function wallPanelMesh(geometry, texture){
+        var material = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture, bumpMap: texture, reflectivity: 100, transparent: true, opacity: 1.0 } );
+        material.side = THREE.DoubleSide;
+        var uva = new THREE.Vector2(0,0);
+        var uvb = new THREE.Vector2(0,1);
+        var uvc = new THREE.Vector2(1,1);
+        var uvd = new THREE.Vector2(1,0);
+
+        geometry.faceVertexUvs[0].push([uva, uvb, uvc])
+        geometry.faceVertexUvs[0].push([uva.clone(), uvc, uvd.clone()])
+        geometry.computeFaceNormals();
+
+        var mesh = new THREE.Mesh(geometry, material);
+        return mesh;
+      }
+
+      function renderZone(z){
+        var Np = z.length;
+        for (var i = 0; i < Np; i++){ 
+          var p = z[i];
+          var wall = wallPanelGeometry(p.vertices);
+          var texture = THREE.ImageUtils.loadTexture( 'img/wall.jpg' );
+          if (p.hasOwnProperty('children')){
+            for (var j = 0; j < p.children.length; j++){
+              var panel = wallPanelGeometry(p.children[i].vertices);
+              var mesh = wallPanelMesh(panel, texture);
+              scene.add(mesh);
+
+              // edges
+              var egh = new THREE.EdgesHelper(mesh, 0x444444);
+              egh.material.linewidth = 2;
+              scene.add(egh);
+            }
+            // subtract / clip the panels from the wall
+            var panelBsp = new ThreeBSP(panel);
+            wallBsp = wallBsp.subtract(panelBsp);
+          }
+          
+          // wall texture
+          var texture = THREE.ImageUtils.loadTexture( 'img/wall1.jpg' );
+          var material = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture, bumpMap: texture, reflectivity: 100, transparent: true, opacity: 1.0 } );
+          material.side = THREE.DoubleSide;
+          var mesh = wallBsp.toMesh(material);
+          
+          var uva = new THREE.Vector2(0,0);
+          var uvb = new THREE.Vector2(0,1);
+          var uvc = new THREE.Vector2(1,1);
+          var uvd = new THREE.Vector2(1,0);
+                                        
+          mesh.geometry.faceVertexUvs[0].push([uva, uvb, uvc])
+          mesh.geometry.faceVertexUvs[0].push([uva.clone(), uvc, uvd.clone()])
+          mesh.geometry.computeFaceNormals();
+          mesh.geometry.computeVertexNormals();
+          scene.add(mesh);
+          
+          // edges
+          var egh = new THREE.EdgesHelper(mesh, 0x444444);
+          egh.material.linewidth = 2;
+          scene.add(egh);
+
+          surfaces.push(mesh);
+          
+        }
+      }
+
+			init();
+			animate();
+
+			function init() {
+			  
+				container = document.createElement( 'div' );
+				document.body.appendChild( container );
+				camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
+				camera.position.x = 800;
+				camera.position.y = 400;
+				camera.position.z = 800;
+				scene = new THREE.Scene();
+        raycaster = new THREE.Raycaster();
+        projector = new THREE.Projector();
+
+        // Gui
+        var gui = new dat.GUI();
+        params = {'opacity': 100 };
+        gui.add(params, 'opacity').min(0).max(100).step(1).onFinishChange(function(){ setOpacity(params.opacity)});
+        
+				// Grid
+				var size = 500, step = 50;
+				var geometry = new THREE.Geometry();
+				for ( var i = - size; i <= size; i += step ) {
+					geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+					geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+				}
+
+				var material = new THREE.LineBasicMaterial( { color: 0xaaaaaa, opacity: 0.2 } );
+				var line = new THREE.Line( geometry, material );
+				line.type = THREE.LinePieces;
+				scene.add( line );
+    
+        // random cube
+        /*
+        var geometry = new THREE.CubeGeometry(500,500,500);
+        var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/wall.jpg') } );
+        var mesh = new THREE.Mesh(geometry, material);
+        scene.add(mesh);
+        */
+        
+				// Lights
+				var ambientLight = new THREE.AmbientLight( 0x999999 );
+				scene.add( ambientLight );
+
+				directionalLight = new THREE.DirectionalLight( 0x808080, 1.0 );
+        directionalLight.position.set( 0, 1, 0 );
+			  scene.add( directionalLight );
+
+				renderer = new THREE.WebGLRenderer( { antialiasing: true } );
+				renderer.setClearColor( 0xf0f0f0 );
+				renderer.setSize( window.innerWidth, window.innerHeight );
+
+        controls = new THREE.OrbitControls(camera, renderer.domElement);
+
+				container.appendChild( renderer.domElement );
+				
+				stats = new Stats();
+				stats.domElement.style.position = 'absolute';
+				stats.domElement.style.top = '0px';
+				container.appendChild( stats.domElement );
+
+				window.addEventListener( 'resize', onWindowResize, false );
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+				document.addEventListener( 'click', onDocumentClick, false );
+        
+				function onWindowResize(){
+					camera.setSize( window.innerWidth, window.innerHeight );
+					camera.updateProjectionMatrix();
+					renderer.setSize( window.innerWidth, window.innerHeight );
+				}
+				example()
+        renderZone(myZone);
+
+			}
+
+      function setOpacity(opacity){
+        for (var i = 0; i < scene.children.length; i++){
+          var ch = scene.children[i];
+          if (ch.hasOwnProperty('material')){
+            ch.material.opacity = opacity/100;
+          }
+        }
+      }
+
+      function onDocumentClick( event ){
+        if ( INTERSECTED ){
+            console.log(INTERSECTED.uuid);
+        }
+      }
+
+      function onDocumentMouseMove( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+      }
+
+			function animate() {
+				requestAnimationFrame( animate );
+				render();
+				stats.update();
+			}
+
+			function render() {
+
+			  var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+        projector.unprojectVector( vector, camera );
+        raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
+        var intersects = raycaster.intersectObjects( surfaces );
+        if ( intersects.length > 0 ) {
+          if ( INTERSECTED != intersects[ 0 ].object) {
+            if ( INTERSECTED ) {
+              INTERSECTED.material.ambient.setHex( INTERSECTED.currentHex );
+              INTERSECTED.material.transparent = true;
+            }
+            INTERSECTED = intersects[ 0 ].object;
+            INTERSECTED.currentHex = INTERSECTED.material.ambient.getHex();
+            INTERSECTED.material.ambient.setHex( 0xffffa0 );
+          }
+        } else {
+          if ( INTERSECTED ) INTERSECTED.material.ambient.setHex( INTERSECTED.currentHex );
+          INTERSECTED = null;
+        }
+			  
+        directionalLight.position.copy( camera.position );
+        directionalLight.position.normalize();
+				renderer.render( scene, camera );
+        controls.update();
+           
+			}
+
+		</script>
+
+	</body>
+</html>
