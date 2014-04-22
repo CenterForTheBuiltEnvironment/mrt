@@ -1,40 +1,40 @@
 
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<title>MRTCalc</title>
-		<meta charset="utf-8">
-		<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-		<style>
-			body {
-				font-family: Monospace;
-				background-color: #f0f0f0;
-				margin: 0px;
-				overflow: hidden;
-				color: purple;
-			}
+  <head>
+    <title>MRTCalc</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+    <style>
+      body {
+        font-family: Monospace;
+        background-color: #f0f0f0;
+        margin: 0px;
+        overflow: hidden;
+        color: purple;
+      }
 
-			a {
-				color: red;
-			}
-		</style>
-	</head>
-	<body>
+      a {
+        color: red;
+      }
+    </style>
+  </head>
+  <body>
 
-	  <script type="text/javascript" src="js/libs/three.js/build/three.min.js"></script>
-		<script type="text/javascript" src="js/libs/three.js/src/extras/cameras/CombinedCamera.js"></script>
-		<script type="text/javascript" src="js/libs/three.js/examples/js/controls/OrbitControls.js"></script>
-		<script type="text/javascript" src="js/libs/stats.min.js"></script>
+    <script type="text/javascript" src="js/libs/three.js/build/three.min.js"></script>
+    <script type="text/javascript" src="js/libs/three.js/src/extras/cameras/CombinedCamera.js"></script>
+    <script type="text/javascript" src="js/libs/three.js/examples/js/controls/OrbitControls.js"></script>
+    <script type="text/javascript" src="js/libs/stats.min.js"></script>
     <script type="text/javascript" src="js/libs/dat-gui/build/dat.gui.min.js"></script>
     <script type="text/javascript" src="js/libs/underscore.min.js"></script>
     
-		<script>
+    <script>
 
       // example of interactive cubes: file:///Users/hoyt/Documents/Projects/mrt/three.js/examples/webgl_interactive_cubes_gpu.html
 
-			var container, stats;
-			var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
-			var surfaces = [];
+      var container, stats;
+      var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
+      var surfaces = [];
       var mouse = new THREE.Vector2();
 
       var myZone = [
@@ -169,18 +169,18 @@
         }
       }
 
-			init();
-			animate();
+      init();
+      animate();
 
-			function init() {
-			  
-				container = document.createElement( 'div' );
-				document.body.appendChild( container );
-				camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
-				camera.position.x = 800;
-				camera.position.y = 400;
-				camera.position.z = 800;
-				scene = new THREE.Scene();
+      function init() {
+        
+        container = document.createElement( 'div' );
+        document.body.appendChild( container );
+        camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
+        camera.position.x = 800;
+        camera.position.y = 400;
+        camera.position.z = 800;
+        scene = new THREE.Scene();
         raycaster = new THREE.Raycaster();
         projector = new THREE.Projector();
 
@@ -189,20 +189,20 @@
         params = {'opacity': 100 };
         gui.add(params, 'opacity').min(0).max(100).step(1).onFinishChange(function(){ setOpacity(params.opacity)});
         
-				// Grid
-				var size = 500, step = 50;
-				var geometry = new THREE.Geometry();
-				for ( var i = - size; i <= size; i += step ) {
-					geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
-					geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
-					geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
-					geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
-				}
+        // Grid
+        var size = 500, step = 50;
+        var geometry = new THREE.Geometry();
+        for ( var i = - size; i <= size; i += step ) {
+          geometry.vertices.push( new THREE.Vector3( - size, 0, i ) );
+          geometry.vertices.push( new THREE.Vector3(   size, 0, i ) );
+          geometry.vertices.push( new THREE.Vector3( i, 0, - size ) );
+          geometry.vertices.push( new THREE.Vector3( i, 0,   size ) );
+        }
 
-				var material = new THREE.LineBasicMaterial( { color: 0xaaaaaa, opacity: 0.2 } );
-				var line = new THREE.Line( geometry, material );
-				line.type = THREE.LinePieces;
-				scene.add( line );
+        var material = new THREE.LineBasicMaterial( { color: 0xaaaaaa, opacity: 0.2 } );
+        var line = new THREE.Line( geometry, material );
+        line.type = THREE.LinePieces;
+        scene.add( line );
     
         // random cube
         /*
@@ -212,40 +212,40 @@
         scene.add(mesh);
         */
         
-				// Lights
-				var ambientLight = new THREE.AmbientLight( 0x999999 );
-				scene.add( ambientLight );
+        // Lights
+        var ambientLight = new THREE.AmbientLight( 0x999999 );
+        scene.add( ambientLight );
 
-				directionalLight = new THREE.DirectionalLight( 0x808080, 1.0 );
+        directionalLight = new THREE.DirectionalLight( 0x808080, 1.0 );
         directionalLight.position.set( 0, 1, 0 );
-			  scene.add( directionalLight );
+        scene.add( directionalLight );
 
-				renderer = new THREE.WebGLRenderer( { antialiasing: true } );
-				renderer.setClearColor( 0xf0f0f0 );
-				renderer.setSize( window.innerWidth, window.innerHeight );
+        renderer = new THREE.WebGLRenderer( { antialiasing: true } );
+        renderer.setClearColor( 0xf0f0f0 );
+        renderer.setSize( window.innerWidth, window.innerHeight );
 
         controls = new THREE.OrbitControls(camera, renderer.domElement);
 
-				container.appendChild( renderer.domElement );
-				
-				stats = new Stats();
-				stats.domElement.style.position = 'absolute';
-				stats.domElement.style.top = '0px';
-				container.appendChild( stats.domElement );
-
-				window.addEventListener( 'resize', onWindowResize, false );
-        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-				document.addEventListener( 'click', onDocumentClick, false );
+        container.appendChild( renderer.domElement );
         
-				function onWindowResize(){
-					camera.setSize( window.innerWidth, window.innerHeight );
-					camera.updateProjectionMatrix();
-					renderer.setSize( window.innerWidth, window.innerHeight );
-				}
-				example()
+        stats = new Stats();
+        stats.domElement.style.position = 'absolute';
+        stats.domElement.style.top = '0px';
+        container.appendChild( stats.domElement );
+
+        window.addEventListener( 'resize', onWindowResize, false );
+        document.addEventListener( 'mousemove', onDocumentMouseMove, false );
+        document.addEventListener( 'click', onDocumentClick, false );
+        
+        function onWindowResize(){
+          camera.setSize( window.innerWidth, window.innerHeight );
+          camera.updateProjectionMatrix();
+          renderer.setSize( window.innerWidth, window.innerHeight );
+        }
+        example()
         renderZone(myZone);
 
-			}
+      }
 
       function setOpacity(opacity){
         for (var i = 0; i < scene.children.length; i++){
@@ -268,15 +268,15 @@
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
       }
 
-			function animate() {
-				requestAnimationFrame( animate );
-				render();
-				stats.update();
-			}
+      function animate() {
+        requestAnimationFrame( animate );
+        render();
+        stats.update();
+      }
 
-			function render() {
+      function render() {
 
-			  var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
+        var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
         projector.unprojectVector( vector, camera );
         raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
         var intersects = raycaster.intersectObjects( surfaces );
@@ -294,15 +294,15 @@
           if ( INTERSECTED ) INTERSECTED.material.ambient.setHex( INTERSECTED.currentHex );
           INTERSECTED = null;
         }
-			  
+        
         directionalLight.position.copy( camera.position );
         directionalLight.position.normalize();
-				renderer.render( scene, camera );
+        renderer.render( scene, camera );
         controls.update();
            
-			}
+      }
 
-		</script>
+    </script>
 
-	</body>
+  </body>
 </html>
