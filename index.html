@@ -122,13 +122,54 @@
 
       function renderZone(z){
         var Np = z.length;
+        var thetax, thetaz
         for (var i = 0; i < Np; i++){ 
           var p = z[i];
           var wall = wallPanelGeometry(p.vertices);
           var texture = THREE.ImageUtils.loadTexture( 'img/wall.jpg' );
+
           if (p.hasOwnProperty('children')){
-            for (var j = 0; j < p.children.length; j++){
-              var panel = wallPanelGeometry(p.children[i].vertices);
+
+            wall.computeFaceNormals();
+            var n0 = wall.faces[0].normal;
+            var arg = Math.pow(n0.x, 2) + Math.pow(n0.y, 2)
+            if (arg == 0){
+              thetaz = 0;
+            } else {
+              thetaz = Math.acos( n0.y / arg );
+            }
+            
+            arg = Math.pow(n0.z, 2) + Math.pow(n0.y, 2)
+            if (arg == 0){
+              thetax = 0;
+            } else {
+              thetax = Math.sqrt( n0.y / arg );
+            }
+
+            var t = new THREE.Matrix4();
+            var ti = new THREE.Matrix4();
+            t.makeRotationX(thetax).makeRotationZ(thetaz);
+            ti.getInverse( t );
+
+            wall.applyMatrix( t );
+            var wallShape = new THREE.Shape();
+            wallShape.moveTo( wall.vertices[0].x, wall.vertices[0].z );
+            for (var j = 1; j < wall.vertices.length; j++){
+              var v = wall.vertices[j];
+              wallShape.lineTo( v.x, v.z );
+            }
+
+            for (var k = 0; k < p.children.length; k++){
+              var panel = wallPanelGeometry(p.children[k].vertices);
+              panel.applyMatrix( t );
+              var hole = new THREE.Path();
+              hole.moveTo(panel.vertices[0].x, panel.vertices[0].z)
+              for (var kk = (panel.vertices.length - 1); kk > 0; kk--){
+                hole.lineTo(panel.vertices[kk].x, panel.vertices[kk].z)
+              }
+              wallShape.holes.push(hole);
+
+              panel.applyMatrix( ti );
               var mesh = wallPanelMesh(panel, texture);
               scene.add(mesh);
 
@@ -137,16 +178,22 @@
               egh.material.linewidth = 2;
               scene.add(egh);
             }
-            // subtract / clip the panels from the wall
-            var panelBsp = new ThreeBSP(panel);
-            wallBsp = wallBsp.subtract(panelBsp);
+            wall = new THREE.ShapeGeometry(wallShape);
+            wall.applyMatrix( t );
           }
-          
+
           // wall texture
           var texture = THREE.ImageUtils.loadTexture( 'img/wall1.jpg' );
-          var material = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture, bumpMap: texture, reflectivity: 100, transparent: true, opacity: 1.0 } );
+          var material = new THREE.MeshPhongMaterial( { 
+              color: 0xffffff, 
+              map: texture, 
+              bumpMap: texture, 
+              reflectivity: 100, 
+              transparent: true, 
+              opacity: 1.0 
+          } );
           material.side = THREE.DoubleSide;
-          var mesh = wallBsp.toMesh(material);
+          var mesh = new THREE.Mesh(wall, material);
           
           var uva = new THREE.Vector2(0,0);
           var uvb = new THREE.Vector2(0,1);
@@ -242,7 +289,6 @@
           camera.updateProjectionMatrix();
           renderer.setSize( window.innerWidth, window.innerHeight );
         }
-        example()
         renderZone(myZone);
 
       }

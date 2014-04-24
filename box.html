@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>WebGL/Three.js Step Tutorial</title>
+    <title>WebGL Pinwheel</title>
     <style>
       body {
         margin: 0px;
@@ -11,13 +11,14 @@
     </style>
   </head>
   <body>
-    <script src="three.js/build/three.min.js"></script>
+    <script src="js/libs/three.js/build/three.min.js"></script>
 <script>
 var camera;
 var scene;
 var renderer;
 var mesh;
- 
+var mesh2;
+
 init();
 animate();
  
@@ -25,19 +26,68 @@ function init() {
  
     scene = new THREE.Scene();
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000);
- 
     var light = new THREE.DirectionalLight( 0xffffff );
     light.position.set( 0, 1, 1 ).normalize();
     scene.add(light);
  
-    var geometry = new THREE.CubeGeometry( 10, 10, 10);
-    //var material = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30 } );
-    var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/crate.jpg') } );
+    //var geometry = new THREE.CubeGeometry( 10, 10, 10);
+    var material = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0x0033ff, specular: 0x555555, shininess: 30, transparent: true, opacity: 0.3 } );
+    var material2 = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0xff3300, specular: 0x555555, shininess: 30, transparent: true, opacity: 0.3  } );
+    var material3 = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0xffff00, specular: 0x555555, shininess: 30 , transparent: true, opacity: 0.3 } );
+    var material4 = new THREE.MeshPhongMaterial( { ambient: 0x050505, color: 0x00ffff, specular: 0x555555, shininess: 30 , transparent: true, opacity: 0.3 } );
+    //var material2 = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/wall1.jpg') } );
 
+    var L = 50;
+    var plane = new THREE.Shape()
+    plane.moveTo(0,0)
+    plane.lineTo(L,0)
+    plane.lineTo(L,L)
+    plane.lineTo(0,L)
+
+    var N = 10;
+
+    function punchedSquareGeometry(nHoles){
+      var incr = L / N;
+      for (var i = 0; i < N; i++){
+        for (var j = 0; j < N; j++){
+          var r = Math.random();
+          var margin = (incr * 0.2 + incr * 0.8 * r)
+          var hole = new THREE.Path();
+          hole.moveTo(incr * i + margin,incr * j + margin);
+          hole.lineTo(incr * (i+1) - margin, incr * j + margin);
+          hole.lineTo(incr * (i+1) - margin, incr * (j+1) - margin);
+          hole.lineTo(incr * i + margin, incr * (j+1) - margin);
+          plane.holes.push(hole);
+        }
+      }
+      var geometry = new THREE.ShapeGeometry(plane);
+      return geometry;
+    }
+    var geometry = punchedSquareGeometry(N)
     mesh = new THREE.Mesh(geometry, material );
-    mesh.position.z = -50;
+    mesh2 = new THREE.Mesh(geometry, material2 );
+    mesh3 = new THREE.Mesh(geometry, material3 );
+    mesh4 = new THREE.Mesh(geometry, material4 );
+    mesh5 = new THREE.Mesh(geometry, material );
+    mesh6 = new THREE.Mesh(geometry, material2 );
+    mesh7 = new THREE.Mesh(geometry, material3 );
+    mesh8 = new THREE.Mesh(geometry, material4 );
+    mesh.position.z = -90;
+    mesh2.position.z = -90;
+    mesh3.position.z = -90;
+    mesh4.position.z = -90;
+    mesh5.position.z = -90;
+    mesh6.position.z = -90;
+    mesh7.position.z = -90;
+    mesh8.position.z = -90;
     scene.add( mesh );
- 
+    scene.add( mesh2 );
+    scene.add( mesh3 );
+    scene.add( mesh4 );
+    scene.add( mesh5 );
+    scene.add( mesh6 );
+    scene.add( mesh7 );
+    scene.add( mesh8 );
     renderer = new THREE.WebGLRenderer();
     renderer.setSize( window.innerWidth, window.innerHeight );
     document.body.appendChild( renderer.domElement );
@@ -48,9 +98,15 @@ function init() {
 }
  
 function animate() {
-    mesh.rotation.x += .04;
-    mesh.rotation.y += .02;
- 
+    mesh.rotation.z += .008;
+    mesh2.rotation.z += .007;
+    mesh3.rotation.z += .006;
+    mesh4.rotation.z += .005;
+    mesh5.rotation.z += .004;
+    mesh6.rotation.z += .003;
+    mesh7.rotation.z += .002;
+    mesh8.rotation.z += .001;
+
     render();
     requestAnimationFrame( animate );
 }
