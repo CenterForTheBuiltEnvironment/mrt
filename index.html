@@ -30,8 +30,6 @@
     
     <script>
 
-      // example of interactive cubes: file:///Users/hoyt/Documents/Projects/mrt/three.js/examples/webgl_interactive_cubes_gpu.html
-
       var container, stats;
       var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
       var surfaces = [];
@@ -67,13 +65,43 @@
                          {'x': 0, 'y': 100, 'z': 0}],
             'radiant_t': 20.0,
             'emissivity': 0.9,
+            'children': [
+              { 'vertices': [{'x': 20, 'y': 20, 'z': 0},
+                             {'x': 40, 'y': 20, 'z': 0},
+                             {'x': 40, 'y': 40, 'z': 0},
+                             {'x': 30, 'y': 30, 'z': 0},
+                             {'x': 20, 'y': 40, 'z': 0}],
+                'radiant_t': 30.0,
+                'emissivity': 0.9,
+              },
+              { 'vertices': [{'x': 60, 'y': 60, 'z': 0},
+                             {'x': 80, 'y': 60, 'z': 0},
+                             {'x': 80, 'y': 80, 'z': 0},
+                             {'x': 70, 'y': 70, 'z': 0},
+                             {'x': 60, 'y': 80, 'z': 0}],
+                'radiant_t': 30.0,
+                'emissivity': 0.9,
+              },
+            ],
           },
           { 'vertices': [{'x': 100, 'y': 0, 'z': 0},
                          {'x': 100, 'y': 100, 'z': 0},
                          {'x': 100, 'y': 100, 'z': 100},
                          {'x': 100, 'y': 0, 'z': 100}],
-             'radiant_t': 20.0,
-             'emissivity': 0.9,
+            'radiant_t': 20.0,
+            'emissivity': 0.9,
+            /*'children': [
+              { 'vertices': [{'x': 100, 'y': 20, 'z': 20},
+                             {'x': 100, 'y': 30, 'z': 20},
+                             {'x': 100, 'y': 30, 'z': 30},
+                             {'x': 100, 'y': 40, 'z': 30},
+                             {'x': 100, 'y': 40, 'z': 40},
+                             {'x': 100, 'y': 50, 'z': 40},
+                             {'x': 100, 'y': 50, 'z': 20}],
+                'radiant_t': 30.0,
+                'emissivity': 0.9,
+              },
+            ],*/
           },
           { 'vertices': [{'x': 0, 'y': 100, 'z': 0},
                          {'x': 100, 'y': 100, 'z': 0},
@@ -81,6 +109,16 @@
                          {'x': 0, 'y': 100, 'z': 100}],
              'radiant_t': 20.0,
              'emissivity': 0.9,
+             'children': [
+              { 'vertices': [{'x': 20, 'y': 100, 'z': 20},
+                             {'x': 80, 'y': 100, 'z': 20},
+                             {'x': 80, 'y': 100, 'z': 80},
+                             {'x': 50, 'y': 100, 'z': 50},
+                             {'x': 20, 'y': 100, 'z': 80}],
+                'radiant_t': 30.0,
+                'emissivity': 0.9,
+              },
+            ],
           },
           { 'vertices': [{'x': 0, 'y': 0, 'z': 100},
                          {'x': 100, 'y': 0, 'z': 100},
@@ -132,40 +170,48 @@
 
             wall.computeFaceNormals();
             var n0 = wall.faces[0].normal;
-            var arg = Math.pow(n0.x, 2) + Math.pow(n0.y, 2)
+            var arg = Math.pow(n0.x, 2) + Math.pow(n0.z, 2)
             if (arg == 0){
-              thetaz = 0;
+              thetay = 0;
             } else {
-              thetaz = Math.acos( n0.y / arg );
+              thetay = Math.acos( n0.z / arg );
             }
             
-            arg = Math.pow(n0.z, 2) + Math.pow(n0.y, 2)
+            arg = Math.pow(n0.y, 2) + Math.pow(n0.z, 2)
             if (arg == 0){
               thetax = 0;
             } else {
-              thetax = Math.sqrt( n0.y / arg );
+              thetax = Math.acos( n0.z / arg );
             }
 
             var t = new THREE.Matrix4();
+            var u = new THREE.Matrix4();
             var ti = new THREE.Matrix4();
-            t.makeRotationX(thetax).makeRotationZ(thetaz);
+            t.makeRotationX(thetax);
+            u.makeRotationY(thetay);
+            t.multiply( u );
             ti.getInverse( t );
+
+            // height translation to be applied later
+            var h = new THREE.Matrix4();
+            h.makeTranslation(0, wall.vertices[0].y, 0);
 
             wall.applyMatrix( t );
             var wallShape = new THREE.Shape();
-            wallShape.moveTo( wall.vertices[0].x, wall.vertices[0].z );
+            wallShape.moveTo( wall.vertices[0].x, wall.vertices[0].y );
+
             for (var j = 1; j < wall.vertices.length; j++){
               var v = wall.vertices[j];
-              wallShape.lineTo( v.x, v.z );
+              wallShape.lineTo( v.x, v.y );
             }
 
             for (var k = 0; k < p.children.length; k++){
               var panel = wallPanelGeometry(p.children[k].vertices);
               panel.applyMatrix( t );
               var hole = new THREE.Path();
-              hole.moveTo(panel.vertices[0].x, panel.vertices[0].z)
+              hole.moveTo(panel.vertices[0].x, panel.vertices[0].y)
               for (var kk = (panel.vertices.length - 1); kk > 0; kk--){
-                hole.lineTo(panel.vertices[kk].x, panel.vertices[kk].z)
+                hole.lineTo(panel.vertices[kk].x, panel.vertices[kk].y)
               }
               wallShape.holes.push(hole);
 
@@ -179,7 +225,8 @@
               scene.add(egh);
             }
             wall = new THREE.ShapeGeometry(wallShape);
-            wall.applyMatrix( t );
+            wall.applyMatrix( ti );
+            wall.applyMatrix( h );
           }
 
           // wall texture
