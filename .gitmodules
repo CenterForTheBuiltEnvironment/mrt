@@ -1,0 +1,6 @@
+[submodule "js/libs/dat-gui"]
+	path = js/libs/dat-gui
+	url = https://github.com/dataarts/dat.gui.git
+[submodule "js/libs/three.js"]
+	path = js/libs/three.js
+	url = https://github.com/mrdoob/three.js.git
