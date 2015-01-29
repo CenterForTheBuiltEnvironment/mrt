@@ -33,6 +33,7 @@
       var container, stats;
       var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
       var surfaces = [];
+      var unitSphere= new THREE.SphereGeometry(1, 10, 10);
       var mouse = new THREE.Vector2();
 
       var myZone = [
@@ -40,7 +41,7 @@
                          {'x': 0, 'y': 100, 'z': 0},
                          {'x': 0, 'y': 100, 'z': 100},
                          {'x': 0, 'y': 0, 'z': 100}],
-            'radiant_t': 20.0,
+            'radiant_t': 17.0,
             'emissivity': 0.9,
             'children': [
               { 'vertices': [{'x': 0, 'y': 20, 'z': 20},
@@ -56,7 +57,7 @@
                          {'x': 100, 'y': 0, 'z': 0},
                          {'x': 100, 'y': 0, 'z': 100},
                          {'x': 0, 'y': 0, 'z': 100}],
-            'radiant_t': 20.0,
+            'radiant_t': 22.0,
             'emissivity': 0.9,
           },
           { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
@@ -71,7 +72,7 @@
                              {'x': 40, 'y': 40, 'z': 0},
                              {'x': 30, 'y': 30, 'z': 0},
                              {'x': 20, 'y': 40, 'z': 0}],
-                'radiant_t': 30.0,
+                'radiant_t': 10.0,
                 'emissivity': 0.9,
               },
               { 'vertices': [{'x': 60, 'y': 60, 'z': 0},
@@ -79,7 +80,7 @@
                              {'x': 80, 'y': 80, 'z': 0},
                              {'x': 70, 'y': 70, 'z': 0},
                              {'x': 60, 'y': 80, 'z': 0}],
-                'radiant_t': 30.0,
+                'radiant_t': 50.0,
                 'emissivity': 0.9,
               },
             ],
@@ -88,7 +89,7 @@
                          {'x': 100, 'y': 100, 'z': 0},
                          {'x': 100, 'y': 100, 'z': 100},
                          {'x': 100, 'y': 0, 'z': 100}],
-            'radiant_t': 20.0,
+            'radiant_t': 25.0,
             'emissivity': 0.9,
             /*'children': [
               { 'vertices': [{'x': 100, 'y': 20, 'z': 20},
@@ -107,7 +108,7 @@
                          {'x': 100, 'y': 100, 'z': 0},
                          {'x': 100, 'y': 100, 'z': 100},
                          {'x': 0, 'y': 100, 'z': 100}],
-             'radiant_t': 20.0,
+             'radiant_t': 28.0,
              'emissivity': 0.9,
              'children': [
               { 'vertices': [{'x': 20, 'y': 100, 'z': 20},
@@ -143,7 +144,14 @@
       }
       
       function wallPanelMesh(geometry, texture){
-        var material = new THREE.MeshPhongMaterial( { color: 0xffffff, map: texture, bumpMap: texture, reflectivity: 100, transparent: true, opacity: 1.0 } );
+        var material = new THREE.MeshPhongMaterial( { 
+            color: 0xffffff, 
+            map: texture, 
+            bumpMap: texture, 
+            reflectivity: 100, 
+            transparent: true, 
+            opacity: 1.0 
+        } );
         material.side = THREE.DoubleSide;
         var uva = new THREE.Vector2(0,0);
         var uvb = new THREE.Vector2(0,1);
@@ -217,6 +225,8 @@
 
               panel.applyMatrix( ti );
               var mesh = wallPanelMesh(panel, panel_texture);
+              mesh.userData.radiant_t = p.radiant_t;
+              mesh.userData.emissivity = p.emissivity
               scene.add(mesh);
 
               // edges
@@ -252,6 +262,8 @@
           
           mesh.geometry.computeFaceNormals();
           mesh.geometry.computeVertexNormals();
+          mesh.userData.radiant_t = p.radiant_t;
+          mesh.userData.emissivity = p.emissivity
           scene.add(mesh);
           
           // edges
@@ -280,8 +292,9 @@
 
         // Gui
         var gui = new dat.GUI();
-        params = {'opacity': 100 };
-        gui.add(params, 'opacity').min(0).max(100).step(1).onFinishChange(function(){ setOpacity(params.opacity)});
+        params = {'opacity': 100, 'height': 50};
+        gui.add(params, 'opacity').min(0).max(100).step(1).onFinishChange(function(){ setOpacity(params.opacity) });
+        gui.add(params, 'height').min(0).max(100).step(1).onFinishChange(function(){ setPlaneHeight(params.height) });
         
         // Grid
         var size = 500, step = 50;
@@ -298,14 +311,19 @@
         line.type = THREE.LinePieces;
         scene.add( line );
     
-        // random cube
-        /*
-        var geometry = new THREE.CubeGeometry(500,500,500);
-        var material = new THREE.MeshPhongMaterial( { map: THREE.ImageUtils.loadTexture('img/wall.jpg') } );
-        var mesh = new THREE.Mesh(geometry, material);
-        scene.add(mesh);
-        */
-        
+        // plane has the same dimensions as the floor
+        var plane_geometry = new THREE.PlaneGeometry( 100, 100, 20, 20 );
+
+        var material = new THREE.MeshBasicMaterial( {color: 0xffffff, side: THREE.DoubleSide, vertexColors: THREE.VertexColors } );
+        plane = new THREE.Mesh( plane_geometry, material );
+        plane.geometry.dynamic = true; // so that we can change the vertex colors
+        var y0 = 50;
+        plane.rotation.x = Math.PI / 2
+        plane.position.x = 50
+        plane.position.y = y0;
+        plane.position.z = 50;
+        scene.add( plane );
+
         // Lights
         var ambientLight = new THREE.AmbientLight( 0x999999 );
         scene.add( ambientLight );
@@ -337,7 +355,6 @@
           renderer.setSize( window.innerWidth, window.innerHeight );
         }
         renderZone(myZone);
-
       }
 
       function setOpacity(opacity){
@@ -347,6 +364,10 @@
             ch.material.opacity = opacity/100;
           }
         }
+      }
+
+      function setPlaneHeight(h){
+        plane.position.y = h;
       }
 
       function onDocumentClick( event ){
@@ -393,6 +414,68 @@
         renderer.render( scene, camera );
         controls.update();
            
+      }
+
+      function MRT(x0, y0, z0) {
+        var dth = Math.PI / 10;
+        var origin = new THREE.Vector3(x0, y0, z0);
+
+        var L = unitSphere.faces.length;
+        var surfTs = [];
+        for (var i = 0; i < L; i++){
+          direction = unitSphere.faces[i].normal;
+          raycaster.set(origin, direction);
+          var collision = raycaster.intersectObjects( surfaces );
+          if (collision.length > 0){
+            var c = collision[0].object;
+            surfTs.push(c.userData.radiant_t * c.userData.emissivity);
+          }
+        }
+        console.log(L, surfTs)
+        var myMRT = _.reduce(surfTs, function(memo, num){ return memo + num / L; }, 0);
+        console.log(myMRT);
+        return myMRT;
+        
+        /*
+        // ... versus parametrization of a sphere 
+        var x, y, z;
+        var collisions = [];
+        for (var th = 0; th < 2*Math.PI; th += dth){
+          for (var phi = 0; phi < Math.PI; phi += dth){
+            x = Math.sin(th) * Math.cos(phi);
+            y = Math.sin(th) * Math.sin(phi);
+            z = Math.cos(th);
+            direction = new THREE.Vector3(x, y, z);
+            rc.set(origin, direction);
+            var collision = rc.intersectObjects(s);
+            collisions.push(collision);
+            //var arrow = new THREE.ArrowHelper(direction, origin, 10, 0xff0000);
+            //scene.add(arrow)
+          }
+        }
+        */
+      }
+
+      function mrt_mesh(){
+        var mrt_vertices = _.map(plane.geometry.vertices, function(v){ 
+          return MRT(v.x, v.y, v.z);
+        });
+        var mrt_min = _.min(mrt_vertices);
+        var mrt_max = _.max(mrt_vertices);
+        var mrt_colors = _.map(mrt_vertices, function(v_mrt){
+          var r = (v_mrt - mrt_min) / (mrt_max - mrt_min)
+          return new THREE.Color(r, r, r)
+        });
+
+        var faceIndices = [ 'a', 'b', 'c'];
+        for (var i = 0; i < plane.geometry.faces.length; i++){
+          var f = plane.geometry.faces[i];
+          for (var j = 0; j < 3; j++){
+            var idx = f[ faceIndices[ j ] ];
+            f.vertexColors.push( mrt_colors[ idx ] );
+          }
+        } 
+        plane.geometry.colorsNeedUpdate = true;
       }
 
     </script>
