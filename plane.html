@@ -33,7 +33,7 @@
       var container, stats;
       var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
       var surfaces = [];
-      var unitSphere= new THREE.SphereGeometry(1, 10, 10);
+      var unitSphere= new THREE.SphereGeometry(1, 8, 8);
       var mouse = new THREE.Vector2();
 
       var myZone = [
@@ -48,7 +48,7 @@
                              {'x': 0, 'y': 80, 'z': 20},
                              {'x': 0, 'y': 80, 'z': 80},
                              {'x': 0, 'y': 20, 'z': 80}],
-                'radiant_t': 30.0,
+                'radiant_t': 80.0,
                 'emissivity': 0.9,
               },
             ],
@@ -228,6 +228,7 @@
               mesh.userData.radiant_t = p.radiant_t;
               mesh.userData.emissivity = p.emissivity
               scene.add(mesh);
+              surfaces.push(mesh);
 
               // edges
               var egh = new THREE.EdgesHelper(mesh, 0x444444);
@@ -265,13 +266,13 @@
           mesh.userData.radiant_t = p.radiant_t;
           mesh.userData.emissivity = p.emissivity
           scene.add(mesh);
+          surfaces.push(mesh);
           
           // edges
           var egh = new THREE.EdgesHelper(mesh, 0x444444);
           egh.material.linewidth = 2;
           scene.add(egh);
 
-          surfaces.push(mesh);
         }
       }
 
@@ -372,7 +373,7 @@
 
       function onDocumentClick( event ){
         if ( INTERSECTED ){
-            console.log(INTERSECTED.uuid);
+          console.log(INTERSECTED.uuid);
         }
       }
 
@@ -429,11 +430,13 @@
           if (collision.length > 0){
             var c = collision[0].object;
             surfTs.push(c.userData.radiant_t * c.userData.emissivity);
+          //  var arrow = new THREE.ArrowHelper(direction, origin, 5, 0x00ff00);
+          //} else {
+          //  var arrow = new THREE.ArrowHelper(direction, origin, 5, 0xff0000);
           }
+          //scene.add(arrow);
         }
-        console.log(L, surfTs)
-        var myMRT = _.reduce(surfTs, function(memo, num){ return memo + num / L; }, 0);
-        console.log(myMRT);
+        var myMRT = _.reduce(surfTs, function(memo, num){ return memo + num / surfTs.length; }, 0);
         return myMRT;
         
         /*
@@ -458,7 +461,10 @@
 
       function mrt_mesh(){
         var mrt_vertices = _.map(plane.geometry.vertices, function(v){ 
-          return MRT(v.x, v.y, v.z);
+          // is it necessary to transform all the vectors?
+          var vec = v.clone()
+          vec.applyMatrix4( plane.matrixWorld )
+          return MRT(vec.x, vec.y, vec.z);
         });
         var mrt_min = _.min(mrt_vertices);
         var mrt_max = _.max(mrt_vertices);
@@ -474,7 +480,7 @@
             var idx = f[ faceIndices[ j ] ];
             f.vertexColors.push( mrt_colors[ idx ] );
           }
-        } 
+        }
         plane.geometry.colorsNeedUpdate = true;
       }
 
