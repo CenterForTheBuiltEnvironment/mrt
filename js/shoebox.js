@@ -11,13 +11,13 @@ mrt.occupant = {
 };
 
 mrt.room = {
-    'depth': 15.0, 
-    'width': 20.0, 
+    'depth': 5.0, 
+    'width': 10.0, 
     'height': 2.6,
 }
 
 params = {
-    'opacity': 0, 
+    'opacity': 0,
     'wall1': {
       'temperature': 21.0,
       'emissivity': 0.9,
@@ -25,9 +25,9 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 5.0,
+        'width': 2.0,
         'height': 1.0,
-        'xposition': 4.0,
+        'xposition': 2.0,
         'yposition': 0.4,
       },
     },
@@ -38,9 +38,9 @@ params = {
         'active': false,
         'temperature': 36.0,
         'emissivity': 0.9,
-        'width': 5.0,
+        'width': 3.0,
         'height': 1.0,
-        'xposition': 4.0,
+        'xposition': 1.0,
         'yposition': 0.4,
       },
     },
@@ -51,9 +51,9 @@ params = {
         'active': false,
         'temperature': 38.0,
         'emissivity': 0.9,
-        'width': 5.0,
+        'width': 2.0,
         'height': 1.0,
-        'xposition': 4.0,
+        'xposition': 2.0,
         'yposition': 0.4,
       },
     },
@@ -64,9 +64,9 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 5.0,
+        'width': 2.0,
         'height': 1.0,
-        'xposition': 4.0,
+        'xposition': 2.0,
         'yposition': 0.4,
       },
     },
@@ -77,10 +77,10 @@ params = {
         'active': false,
         'temperature': 50.0,
         'emissivity': 0.9,
-        'width': 5.0,
-        'height': 5.0,
-        'xposition': 2.0,
-        'yposition': 2.0,
+        'width': 3.0,
+        'height': 3.0,
+        'xposition': 1.0,
+        'yposition': 1.0,
       },
     },
     'floor': {
@@ -90,9 +90,9 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 5.0,
+        'width': 2.0,
         'height': 1.0,
-        'xposition': 4.0,
+        'xposition': 2.0,
         'yposition': 0.4,
       },
     },
@@ -270,6 +270,9 @@ function gen_zone_geometry(){
       var v0 = params.wall1.panel.yposition;
       var w = params.wall1.panel.width;
       var h = params.wall1.panel.height;
+
+      // make sure the panel fits!
+
       wall1.children = [
         { 'vertices': [{'x': u0, 'y': v0, 'z': 0 },
                        {'x': u0, 'y': v0 + h, 'z': 0 },
@@ -311,24 +314,25 @@ function gen_zone_geometry(){
       {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
       {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth}],
     };
-    /*
+    
     if (params.wall3.panel.active){
       var u0 = params.wall3.panel.xposition;
       var v0 = params.wall3.panel.yposition;
       var w = params.wall3.panel.width;
       var h = params.wall3.panel.height;
       wall3.children = [
-        { 'vertices': [{'x': mrt.room.width, 'y': v0, 'z': u0 },
-                       {'x': mrt.room.width, 'y': v0 + h, 'z': u0 },
-                       {'x': mrt.room.width, 'y': v0 + h, 'z': u0 + w },
-                       {'x': mrt.room.width, 'y': v0, 'z': u0 + w }],
+        { 'vertices': [{'x': u0, 'y': v0, 'z': mrt.room.depth },
+                       {'x': u0, 'y': v0 + h, 'z': mrt.room.depth },
+                       {'x': u0 + w, 'y': v0 + h, 'z': mrt.room.depth },
+                       {'x': u0 + w, 'y': v0, 'z': mrt.room.depth }],
           'radiant_t': params.wall3.panel.temperature,
           'emissivity': params.wall3.panel.emissivity,
         },
       ];
     } else {
       wall3.children = [];
-    }*/
+    }
+    
 
     var wall4 = { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
       {'x': 0, 'y': mrt.room.height, 'z': 0},
@@ -476,10 +480,9 @@ function render_zone(){
     'x': mrt.room.width / 20,
     'y': mrt.room.depth / 20,
   }
-  var aspect_ratio = mrt.room.width / mrt.room.height;
-  var Nx = Math.floor(8 / aspect_ratio);
-  var Ny = Math.floor(8 * aspect_ratio);
-
+  var aspect_ratio = mrt.room.width / mrt.room.depth;
+  var Nx = Math.floor(15.0 / aspect_ratio);
+  var Ny = Math.floor(15.0 * aspect_ratio);
   var plane_geometry = new THREE.PlaneGeometry( mrt.room.width - margin.x, mrt.room.depth - margin.y, Nx, Ny );
 
   var material = new THREE.MeshBasicMaterial({
@@ -506,7 +509,7 @@ function render_zone(){
     var wall = wallPanelGeometry(p.vertices);
     var panel_texture = THREE.ImageUtils.loadTexture( 'img/wall.jpg' );
 
-    if (p.hasOwnProperty('children')){
+    if (p.children.length > 0){
 
       wall.computeFaceNormals();
       var n0 = wall.faces[0].normal;
@@ -535,7 +538,7 @@ function render_zone(){
 
       // height translation to be applied later
       var h = new THREE.Matrix4();
-      h.makeTranslation(0, wall.vertices[0].y, 0);
+      h.makeTranslation(wall.vertices[0].x, wall.vertices[0].y, wall.vertices[0].z);
 
       wall.applyMatrix( t );
       var wallShape = new THREE.Shape();
@@ -970,10 +973,6 @@ function mrt_mesh(){
   });
   var mrt_min = _.min(mrt_vertices);
   var mrt_max = _.max(mrt_vertices);
-
-  mrt.occupant.position.x = 1;
-  mrt.occupant.position.y = 1;
-  console.log(mrt.calc());
 
   document.getElementById("scale-maximum").innerHTML = mrt_max.toFixed(1);
   document.getElementById('scale-minimum').innerHTML = mrt_min.toFixed(1);

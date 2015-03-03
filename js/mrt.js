@@ -269,7 +269,7 @@ mrt.calc = function(){
                 d_perp, mesh_area, mrt.occupant.position, 
                 mrt.occupant.azimuth, mrt.occupant.posture, average_azimuths)
 
-        if (surface.hasOwnProperty('subsurfaces')){
+        if (surface.subsurfaces.length > 0){
             for (var j = 0; j < surface.subsurfaces.length; j++){
                 var subsurface = surface.subsurfaces[j];
                 // start with offset of parent surface
