@@ -277,9 +277,12 @@ mrt.calc = function(){
                 // offset according to the lower left vertex
                 offset[surface.plane[0]] += subsurface.u;
                 offset[surface.plane[1]] += subsurface.v;
+
+                // optimize by not recomputing this mesh every time
                 var subsurface_mesh = mrt.create_mesh(subsurface.width, subsurface.height, 
                     offset, surface.plane, Nu, Nv);
                 var subsurface_mesh_area = subsurface.width / Nu * subsurface.height / Nv;
+
                 var sub_vf = mrt.mesh_view_factor(subsurface_mesh.mesh, d_perp, subsurface_mesh_area,
                     mrt.occupant.position, mrt.occupant.azimuth, mrt.occupant.posture, average_azimuths);
                 vf -= sub_vf;
