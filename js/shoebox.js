@@ -886,7 +886,6 @@ function init() {
 
   window.addEventListener( 'resize', onWindowResize, false );
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-  document.addEventListener( 'click', onDocumentClick, false );
   
   function onWindowResize(){
     camera.setSize( window.innerWidth, window.innerHeight );
@@ -915,12 +914,6 @@ function setOpacity(opacity){
   }
 }
 
-function onDocumentClick( event ){
-  if ( INTERSECTED ){
-    console.log(INTERSECTED.uuid);
-  }
-}
-
 function onDocumentMouseMove( event ) {
   event.preventDefault();
   mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -933,28 +926,22 @@ function animate() {
   stats.update();
 }
 
+function invert_color(color) {
+  var t = mrt_min + color.r * (mrt_max - mrt_min);
+  return t;
+}
+
 function render() {
   var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
   projector.unprojectVector( vector, camera );
   raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
-  var viz_plane = _.filter(scene.children, function(c){ return c.name == "visualization"; });
-  var intersects = raycaster.intersectObjects( viz_plane );
-  /*
+  var intersects = raycaster.intersectObject( plane, true );
   if ( intersects.length > 0 ) {
-    if ( INTERSECTED != intersects[ 0 ].object) {
-      if ( INTERSECTED ) {
-        //INTERSECTED.material.ambient.setHex( INTERSECTED.currentHex );
-        //INTERSECTED.material.transparent = true;
-      }
-      INTERSECTED = intersects[ 0 ].object;
-      INTERSECTED.currentHex = INTERSECTED.material.ambient.getHex();
-      INTERSECTED.material.ambient.setHex( 0xffffa0 );
-    }
+    var t = invert_color(intersects[0].face.vertexColors[0]);
+    document.getElementById('cursor-temperature').innerHTML = t.toFixed(1);
   } else {
-    if ( INTERSECTED ) INTERSECTED.material.ambient.setHex( INTERSECTED.currentHex );
-    INTERSECTED = null;
+    document.getElementById('cursor-temperature').innerHTML = "";
   }
-  */
 
   directionalLight.position.copy( camera.position );
   directionalLight.position.normalize();
@@ -969,10 +956,11 @@ function mrt_mesh(){
     vec.applyMatrix4( plane.matrixWorld );
     mrt.occupant.position.x = vec.x;
     mrt.occupant.position.y = vec.z;
-    return mrt.calc();
+    var vfs = mrt.view_factors();
+    return mrt.calc(vfs);
   });
-  var mrt_min = _.min(mrt_vertices);
-  var mrt_max = _.max(mrt_vertices);
+  mrt_min = _.min(mrt_vertices);
+  mrt_max = _.max(mrt_vertices);
 
   document.getElementById("scale-maximum").innerHTML = mrt_max.toFixed(1);
   document.getElementById('scale-minimum').innerHTML = mrt_min.toFixed(1);

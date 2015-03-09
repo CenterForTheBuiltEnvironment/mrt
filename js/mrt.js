@@ -249,7 +249,8 @@ mrt.occupant = {
     'posture': 'seated'
 };
 
-mrt.calc = function(){
+mrt.view_factors = function() {
+    // return a list where each element is the surface name and its view factor
     var Nu = 50;
     var Nv = 50;
     var my_mrt = 0;
@@ -257,10 +258,13 @@ mrt.calc = function(){
     var vf_emis_total = 0;
     var average_azimuths = false;
 
+    var surface_vfs = [];
     mrt.occupant.position.z = (mrt.occupant.posture == 'seated') ? 0.6 : 1.0
 
     for (var i = 0; i < mrt.walls.length; i++){
         var surface = mrt.walls[i];
+
+        // optimize by not recomputing this mesh every time
         var mesh = mrt.create_mesh(surface.u, surface.v, surface.offset, surface.plane, Nu, Nv);
         var mesh_area = surface.u / Nu * surface.v / Nv;
         var d_perp = Math.abs(mrt.occupant.position[mesh.perpendicular_plane] 
@@ -286,12 +290,36 @@ mrt.calc = function(){
                 var sub_vf = mrt.mesh_view_factor(subsurface_mesh.mesh, d_perp, subsurface_mesh_area,
                     mrt.occupant.position, mrt.occupant.azimuth, mrt.occupant.posture, average_azimuths);
                 vf -= sub_vf;
-                vf_total += sub_vf;
-                vf_emis_total += subsurface.emissivity * sub_vf;
-                my_mrt += sub_vf * subsurface.emissivity * Math.pow(subsurface.temperature + 273.15, 4);
-            }
 
+                surface_vfs.push({ 
+                    'name': subsurface.name,
+                    'parent': surface.name,
+                    'view_factor': sub_vf,
+                });
+            }
         }
+        surface_vfs.push({ 
+            'name': surface.name,
+            'view_factor': vf,
+        });
+    }
+    return surface_vfs;
+}
+
+mrt.calc = function(surface_vfs){    
+    var vf_total = 0;
+    var vf_emis_total = 0;
+    var my_mrt = 0;
+
+    for (var i = 0; i < surface_vfs.length; i++){
+        var s = surface_vfs[i];
+        if (s.hasOwnProperty('parent')){
+            var parent = _.find(mrt.walls, function(w){ return (w.name === s.parent) });
+            var surface = _.find(parent.subsurfaces, function(x){ return (x.name === s.name) });
+        } else {
+            var surface =  _.find(mrt.walls, function(w){ return (w.name === s.name) });
+        }
+        var vf = s.view_factor;
         vf_total += vf;
         vf_emis_total += surface.emissivity * vf;
         my_mrt += vf * surface.emissivity * Math.pow(surface.temperature + 273.15, 4);
