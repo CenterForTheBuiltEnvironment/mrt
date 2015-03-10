@@ -253,10 +253,7 @@ mrt.view_factors = function() {
     // return a list where each element is the surface name and its view factor
     var Nu = 50;
     var Nv = 50;
-    var my_mrt = 0;
-    var vf_total = 0;
-    var vf_emis_total = 0;
-    var average_azimuths = false;
+    var average_azimuths = false; // implement
 
     var surface_vfs = [];
     mrt.occupant.position.z = (mrt.occupant.posture == 'seated') ? 0.6 : 1.0
@@ -317,7 +314,9 @@ mrt.calc = function(surface_vfs){
             var parent = _.find(mrt.walls, function(w){ return (w.name === s.parent) });
             var surface = _.find(parent.subsurfaces, function(x){ return (x.name === s.name) });
         } else {
-            var surface =  _.find(mrt.walls, function(w){ return (w.name === s.name) });
+            var surface =  _.find(mrt.walls, function(w){ 
+                return (w.name === s.name);
+            });
         }
         var vf = s.view_factor;
         vf_total += vf;

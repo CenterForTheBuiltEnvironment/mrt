@@ -6,7 +6,7 @@ var mouse = new THREE.Vector2();
 
 mrt.occupant = {
     'position': {'x': 1, 'y': 1},
-    'azimuth': 0, //Math.PI / 3, 
+    'azimuth': 0.0, //Math.PI / 3, 
     'posture': 'seated',
 };
 
@@ -101,6 +101,8 @@ params = {
       calculate_all();
     }
 };
+
+var view_factors;
 
 function set_wall_properties(){
   mrt.walls = [
@@ -499,6 +501,7 @@ function render_zone(){
   plane.geometry.dynamic = true; // so that we can change the vertex colors
   plane.name = "visualization";
   scene.add( plane );
+  plane.updateMatrixWorld();
 
   // Surfaces
 
@@ -686,7 +689,11 @@ function init() {
   var panel_wall1_xpos = panel_wall1.add(params.wall1.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_wall1_ypos = panel_wall1.add(params.wall1.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall1_width, panel_wall1_height, panel_wall1_xpos, panel_wall1_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    g.onFinishChange(function(){ 
+      if (params.wall1.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Wall 2 gui /////////////////////
@@ -710,7 +717,11 @@ function init() {
   var panel_wall2_xpos = panel_wall2.add(params.wall2.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_wall2_ypos = panel_wall2.add(params.wall2.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall2_width, panel_wall2_height, panel_wall2_xpos, panel_wall2_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    g.onFinishChange(function(){ 
+      if (params.wall2.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Wall 3 gui /////////////////////
@@ -734,7 +745,11 @@ function init() {
   var panel_wall3_xpos = panel_wall3.add(params.wall3.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_wall3_ypos = panel_wall3.add(params.wall3.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall3_width, panel_wall3_height, panel_wall3_xpos, panel_wall3_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    g.onFinishChange(function(){ 
+      if (params.wall3.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Wall 4 gui /////////////////////
@@ -758,7 +773,11 @@ function init() {
   var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall4_width, panel_wall4_height, panel_wall4_xpos, panel_wall4_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    g.onFinishChange(function(){ 
+      if (params.wall4.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Ceiling gui /////////////////////
@@ -781,9 +800,12 @@ function init() {
   var panel_ceiling_height = panel_ceiling.add(params.ceiling.panel, 'height').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_ceiling_xpos = panel_ceiling.add(params.ceiling.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_ceiling_ypos = panel_ceiling.add(params.ceiling.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
-  
-  _.each([panel_ceiling_width, panel_ceiling_height, panel_ceiling_xpos, panel_ceiling_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    _.each([panel_ceiling_width, panel_ceiling_height, panel_ceiling_xpos, panel_ceiling_ypos], function(g){
+    g.onFinishChange(function(){ 
+      if (params.ceiling.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Floor gui /////////////////////
@@ -806,21 +828,24 @@ function init() {
   var panel_floor_height = panel_floor.add(params.floor.panel, 'height').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_floor_xpos = panel_floor.add(params.floor.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_floor_ypos = panel_floor.add(params.floor.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
-  
   _.each([panel_floor_width, panel_floor_height, panel_floor_xpos, panel_floor_ypos], function(g){
-    g.onFinishChange(function(){ calculate_all(); });
+    g.onFinishChange(function(){ 
+      if (params.floor.panel.active){
+        calculate_all(); 
+      }
+    });
   });
 
   // Occupant gui /////////////////////
 
   gui.add(mrt.occupant, 'posture', [ 'seated', 'standing' ] )
     .onFinishChange(function(){
-      mrt_mesh();
+      calculate_all();
     })
 
-  gui.add(mrt.occupant, 'azimuth').min(0).max(Math.PI).step(0.1)
+  gui.add(mrt.occupant, 'azimuth').min(0.0).max(Math.PI).step(0.01)
     .onFinishChange(function(){
-      mrt_mesh();
+      calculate_all();
     })
 
   // Etc ... /////////////////////
@@ -892,9 +917,9 @@ function init() {
     camera.updateProjectionMatrix();
     renderer.setSize( window.innerWidth, window.innerHeight );
   }
-
   set_wall_properties();
   render_zone();
+  update_view_factors();
   mrt_mesh();
 }
 
@@ -902,7 +927,13 @@ function calculate_all(){
   remove_zone();
   set_wall_properties();
   render_zone();
-  setTimeout(mrt_mesh, 100);
+
+  // a little hack so that the function returns
+  setTimeout(function(){ 
+    update_view_factors();
+    mrt_mesh();
+  }, 1);
+
 }
 
 function setOpacity(opacity){
@@ -937,26 +968,52 @@ function render() {
   raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
   var intersects = raycaster.intersectObject( plane, true );
   if ( intersects.length > 0 ) {
-    var t = invert_color(intersects[0].face.vertexColors[0]);
-    document.getElementById('cursor-temperature').innerHTML = t.toFixed(1);
+    // quick method for calculating the mrt
+    // var t = invert_color(intersects[0].face.vertexColors[0]);
+
+    mrt.occupant.position.x = intersects[0].point.x;
+    mrt.occupant.position.y = intersects[0].point.z;
+    var myvfs = mrt.view_factors();
+    var t = mrt.calc(myvfs);
+
+    document.getElementById('occupant-position').innerHTML = "Occupant (x, y): (" 
+      + intersects[0].point.x.toFixed(1) + ", " + intersects[0].point.z.toFixed(1) + ")";
+    document.getElementById('cursor-temperature').innerHTML = "MRT: " + t.toFixed(1);
   } else {
     document.getElementById('cursor-temperature').innerHTML = "";
+    document.getElementById('occupant-position').innerHTML = "";
   }
-
   directionalLight.position.copy( camera.position );
   directionalLight.position.normalize();
   renderer.render( scene, camera );
   controls.update();
-     
 }
 
-function mrt_mesh(){
-  var mrt_vertices = _.map(plane.geometry.vertices, function(v){ 
-    var vec = v.clone()
-    vec.applyMatrix4( plane.matrixWorld );
-    mrt.occupant.position.x = vec.x;
-    mrt.occupant.position.y = vec.z;
+function update_view_factors(){
+
+  view_factors = _.map(plane.geometry.vertices, function(v){ 
+    var my_vector = new THREE.Vector3();
+    my_vector.copy(v);
+    my_vector.applyMatrix4( plane.matrixWorld );
+    mrt.occupant.position.x = my_vector.x;
+    mrt.occupant.position.y = my_vector.z;
     var vfs = mrt.view_factors();
+    var vfsum = 0;
+    for (var i = 0; i < vfs.length; i++){
+      vfsum += vfs[i].view_factor;
+    }
+    norm_factor = 1.0 / vfsum;
+    for (var i = 0; i < vfs.length; i++){
+      vfs[i].view_factor *= norm_factor;
+    }
+    return vfs;
+  });
+
+} 
+
+function mrt_mesh(){
+  
+  var mrt_vertices = _.map(view_factors, function(vfs){ 
     return mrt.calc(vfs);
   });
   mrt_min = _.min(mrt_vertices);
@@ -970,10 +1027,11 @@ function mrt_mesh(){
       return new THREE.Color(0, 0, 1);
     } else {
       var r = (v_mrt - mrt_min) / (mrt_max - mrt_min);
-      //return new THREE.Color(r, r, r);
-      
       return new THREE.Color(r, 0, 1 - r);
       
+      // grayscale
+      // return new THREE.Color(r, r, r);
+
       // my attempt to go from blue -> green -> red. whoa.
       //if (r < 0.5) {
       //  return new THREE.Color(0, 2 * r, 1 - 2 * r);
