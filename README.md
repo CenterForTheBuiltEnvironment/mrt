@@ -6,7 +6,7 @@ A graphical tool for modeling the spatial resolution of mean radiant temperature
 Running it
 ----------
 
-Open `index.html' in a nice browser. As long as it's up-to-date and has WebGL there should be nothing to install.
+Open `index.html` in a nice browser. As long as it's up-to-date and has WebGL there should be nothing to install.
 
 Features
 --------
