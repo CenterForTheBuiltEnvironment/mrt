@@ -6,7 +6,7 @@ var mouse = new THREE.Vector2();
 
 mrt.occupant = {
     'position': {'x': 1, 'y': 1},
-    'azimuth': 0.0, //Math.PI / 3, 
+    'azimuth': 0.0, 
     'posture': 'seated',
 };
 
@@ -17,6 +17,7 @@ mrt.room = {
 }
 
 params = {
+    'azimuth': 0,
     'opacity': 0,
     'wall1': {
       'temperature': 21.0,
@@ -96,6 +97,7 @@ params = {
         'yposition': 0.4,
       },
     },
+    'display': 'MRT',
     'autocalculate': true,
     'calculate now': function(){
       calculate_all();
@@ -282,6 +284,7 @@ function gen_zone_geometry(){
                        {'x': u0 + w, 'y': v0, 'z': 0 }],
           'radiant_t': params.wall1.panel.temperature,
           'emissivity': params.wall1.panel.emissivity,
+          'name': 'wall1panel1'
         },
       ];
     } else {
@@ -305,6 +308,7 @@ function gen_zone_geometry(){
                        {'x': mrt.room.width, 'y': v0, 'z': u0 + w }],
           'radiant_t': params.wall2.panel.temperature,
           'emissivity': params.wall2.panel.emissivity,
+          'name': 'wall2panel1'
         },
       ];
     } else {
@@ -329,6 +333,7 @@ function gen_zone_geometry(){
                        {'x': u0 + w, 'y': v0, 'z': mrt.room.depth }],
           'radiant_t': params.wall3.panel.temperature,
           'emissivity': params.wall3.panel.emissivity,
+          'name': 'wall3panel1',
         },
       ];
     } else {
@@ -354,6 +359,7 @@ function gen_zone_geometry(){
                        {'x': 0, 'y': v0, 'z': u0 + w }],
           'radiant_t': params.wall4.panel.temperature,
           'emissivity': params.wall4.panel.emissivity,
+          'name': 'wall4panel1',
         },
       ];
     } else {
@@ -378,6 +384,7 @@ function gen_zone_geometry(){
                        {'x': u0, 'y': mrt.room.height, 'z': v0 + h }],
           'radiant_t': params.ceiling.panel.temperature,
           'emissivity': params.ceiling.panel.emissivity,
+          'name': 'ceilingpanel1',
         },
       ];
     } else {
@@ -402,6 +409,7 @@ function gen_zone_geometry(){
                        {'x': u0, 'y': 0, 'z': v0 + h }],
           'radiant_t': params.floor.panel.temperature,
           'emissivity': params.floor.panel.emissivity,
+          'name': 'floorpanel1',
         },
       ];
     } else {
@@ -483,8 +491,8 @@ function render_zone(){
     'y': mrt.room.depth / 20,
   }
   var aspect_ratio = mrt.room.width / mrt.room.depth;
-  var Nx = Math.floor(15.0 / aspect_ratio);
-  var Ny = Math.floor(15.0 * aspect_ratio);
+  var Nx = Math.floor(20.0 / aspect_ratio);
+  var Ny = Math.floor(20.0 * aspect_ratio);
   var plane_geometry = new THREE.PlaneGeometry( mrt.room.width - margin.x, mrt.room.depth - margin.y, Nx, Ny );
 
   var material = new THREE.MeshBasicMaterial({
@@ -564,14 +572,10 @@ function render_zone(){
 
         panel.applyMatrix( ti );
         var mesh = wallPanelMesh(panel, panel_texture);
+        mesh.name = p.children[k].name;
         scene.add(mesh);
         surfaces.push(mesh);
 
-        // do we need the edges for the children?
-        // edges
-        //var egh = new THREE.EdgesHelper(mesh, 0x444444);
-        //egh.material.linewidth = 2;
-        //scene.add(egh);
       }
       wall = new THREE.ShapeGeometry(wallShape);
       wall.applyMatrix( ti );
@@ -664,7 +668,8 @@ function init() {
       surface[property] = value;
     }
     if (params.autocalculate){
-      mrt_mesh();
+      update_shortwave_components();
+      update_visualization();
     }
   }
 
@@ -843,18 +848,54 @@ function init() {
       calculate_all();
     })
 
-  gui.add(mrt.occupant, 'azimuth').min(0.0).max(Math.PI).step(0.01)
+  gui.add(params, 'azimuth').min(0.0).max(360).step(1)
     .onFinishChange(function(){
+      mrt.occupant.azimuth = Math.PI * params.azimuth / 180;
       calculate_all();
     })
 
   // Etc ... /////////////////////
 
-  gui.add(params, 'opacity').min(0).max(100).step(1)
-    .onFinishChange(function(){ setOpacity(params.opacity) });
-
+  gui.add(params, 'display', [
+          'Longwave MRT', 
+          'Direct shortwave', 
+          'Diffuse shortwave', 
+          'Reflected shortwave', 
+          'Shortwave dMRT', 
+          'ERF', 
+          'MRT',
+  ]).onFinishChange(function(){ do_fast_stuff(); });
   gui.add(params, 'autocalculate');
   gui.add(params, 'calculate now');
+
+  // SolarCal 
+
+  solarcal = {
+      'alt': 45, 
+      'az': 0, 
+      'fbes': 0.5, 
+      'tsol': 0.8, 
+      'Idir': 700,
+      'tsol': 0.8,
+      'asa': 0.7,
+      'Rfloor': 0.5,
+      'window_surface': 'wall1'
+  }
+  var solarcal_f = gui.addFolder('SolarCal');
+  solarcal_f.add(solarcal, 'window_surface', ['wall1', 'wall2', 'wall3', 'wall4', 'ceiling'])
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'alt').min(0).max(90).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'az').min(0).max(360).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'Rfloor').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
 
   function set_panel_guis(){
     panel_wall1_width.max(mrt.room.width);
@@ -920,7 +961,8 @@ function init() {
   set_wall_properties();
   render_zone();
   update_view_factors();
-  mrt_mesh();
+  update_shortwave_components();
+  update_visualization();
 }
 
 function calculate_all(){
@@ -931,10 +973,16 @@ function calculate_all(){
   // a little hack so that the function returns
   setTimeout(function(){ 
     update_view_factors();
-    mrt_mesh();
+    update_shortwave_components();
+    update_visualization();
   }, 1);
 
 }
+
+var do_fast_stuff = function(){
+  update_shortwave_components();
+  update_visualization();
+};
 
 function setOpacity(opacity){
   for (var i = 0; i < scene.children.length; i++){
@@ -1011,33 +1059,103 @@ function update_view_factors(){
 
 } 
 
-function mrt_mesh(){
-  
-  var mrt_vertices = _.map(view_factors, function(vfs){ 
-    return mrt.calc(vfs);
-  });
-  mrt_min = _.min(mrt_vertices);
-  mrt_max = _.max(mrt_vertices);
+function update_shortwave_components() {
 
-  document.getElementById("scale-maximum").innerHTML = mrt_max.toFixed(1);
-  document.getElementById('scale-minimum').innerHTML = mrt_min.toFixed(1);
-  var mrt_colors = _.map(mrt_vertices, function(v_mrt){
-    var mrt_range = mrt_max - mrt_min;
-    if (mrt_range == 0){
+  var window_name = solarcal.window_surface + 'panel1';
+  var window_object = _.find(scene.children, function(o){
+    return o.name == window_name;
+  }); 
+  
+  var sun_position = new THREE.Vector3();
+  var r = 1000; 
+  var alt = solarcal.alt;
+  var az = solarcal.az;
+
+  alt_rad = Math.PI * alt / 180;
+  az_rad = Math.PI * az / 180;
+  
+  sun_position.x = r * Math.sin(alt_rad) * Math.cos(az_rad);
+  sun_position.y = r * Math.sin(alt_rad);
+  sun_position.z = r * Math.sin(alt_rad) * Math.sin(az_rad);
+      
+  if (window_object) {
+    ERF_vertex_values = _.map(plane.geometry.vertices, function(v, i){
+      // Check direct exposure
+      var my_vector = new THREE.Vector3();
+      my_vector.copy(v);
+      my_vector.applyMatrix4( plane.matrixWorld );
+      raycaster.set(my_vector, sun_position);
+      var intersects = raycaster.intersectObject( window_object );
+      if (intersects.length == 0){
+        var direct = false;
+      } else {
+        var direct = true;
+      }
+
+      var my_view_factor = _.find(view_factors[i], function(o){
+         return o.name == solarcal.window_surface + 'panel1';
+      }).view_factor;
+      var svvf = my_view_factor;
+      var my_erf = ERF(alt, az, mrt.occupant.posture, 
+        solarcal.Idir, solarcal.tsol, svvf, 
+        solarcal.fbes, solarcal.asa, solarcal.Rfloor, direct)
+      return my_erf;
+    });
+  } else {
+    // if no window object, all components are zero
+    ERF_vertex_values = _.map(plane.geometry.vertices, function(){ 
+      return {'E_direct': 0, 'E_diff': 0, 'E_refl': 0, 'dMRT': 0, 'ERF': 0};
+    });
+      
+  }
+
+}
+
+function update_visualization(){
+  var vertex_values; 
+
+  if (params.display == 'Longwave MRT'){
+    vertex_values = _.map(view_factors, function(vfs){ 
+      return mrt.calc(vfs);
+    });
+  } else if (params.display == 'Direct shortwave') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.E_direct;
+    });
+  } else if (params.display == 'Diffuse shortwave') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.E_diff;
+    });
+  } else if (params.display == 'Reflected shortwave') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.E_refl;
+    });
+  } else if (params.display == 'Shortwave dMRT') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.dMRT;
+    });
+  } else if (params.display == 'ERF') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.ERF;
+    });
+  } else if (params.display == 'MRT') {
+    var vertex_values = _.map(view_factors, function(vfs, i){
+      return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
+    });
+  }
+
+  scale_min = _.min(vertex_values);
+  scale_max = _.max(vertex_values);
+
+  document.getElementById("scale-maximum").innerHTML = scale_max.toFixed(1);
+  document.getElementById('scale-minimum').innerHTML = scale_min.toFixed(1);
+  var vertex_colors = _.map(vertex_values, function(v){
+    var value_range = scale_max - scale_min;
+    if (value_range == 0){
       return new THREE.Color(0, 0, 1);
     } else {
-      var r = (v_mrt - mrt_min) / (mrt_max - mrt_min);
+      var r = (v - scale_min) / (scale_max - scale_min);
       return new THREE.Color(r, 0, 1 - r);
-      
-      // grayscale
-      // return new THREE.Color(r, r, r);
-
-      // my attempt to go from blue -> green -> red. whoa.
-      //if (r < 0.5) {
-      //  return new THREE.Color(0, 2 * r, 1 - 2 * r);
-      //} else {
-      //  return new THREE.Color(2 * r - 1, 2 - 2 * r, 0);
-      //}
     }
   });
 
@@ -1047,7 +1165,7 @@ function mrt_mesh(){
     f.vertexColors = [];
     for (var j = 0; j < 3; j++){
       var idx = f[ faceIndices[ j ] ];
-      f.vertexColors.push( mrt_colors[ idx ] );
+      f.vertexColors.push( vertex_colors[ idx ] );
     }
   }
   plane.geometry.colorsNeedUpdate = true;
