@@ -26,9 +26,9 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 2.0,
-        'height': 1.0,
-        'xposition': 2.0,
+        'width': 8.0,
+        'height': 1.8,
+        'xposition': 1.0,
         'yposition': 0.4,
       },
     },
@@ -40,7 +40,7 @@ params = {
         'temperature': 36.0,
         'emissivity': 0.9,
         'width': 3.0,
-        'height': 1.0,
+        'height': 1.8,
         'xposition': 1.0,
         'yposition': 0.4,
       },
@@ -52,9 +52,9 @@ params = {
         'active': false,
         'temperature': 38.0,
         'emissivity': 0.9,
-        'width': 2.0,
-        'height': 1.0,
-        'xposition': 2.0,
+        'width': 8.0,
+        'height': 1.8,
+        'xposition': 1.0,
         'yposition': 0.4,
       },
     },
@@ -65,9 +65,9 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 2.0,
-        'height': 1.0,
-        'xposition': 2.0,
+        'width': 3.0,
+        'height': 1.8,
+        'xposition': 1.0,
         'yposition': 0.4,
       },
     },
@@ -91,10 +91,10 @@ params = {
         'active': false,
         'temperature': 40.0,
         'emissivity': 0.9,
-        'width': 2.0,
-        'height': 1.0,
-        'xposition': 2.0,
-        'yposition': 0.4,
+        'width': 3.0,
+        'height': 3.0,
+        'xposition': 1.0,
+        'yposition': 1.0,
       },
     },
     'display': 'MRT',
@@ -720,9 +720,12 @@ function init() {
     }
   }
 
+  // Surfaces
+  var f_surfaces = gui.addFolder('Surfaces');
+
   // Wall 1 gui /////////////////////
 
-  var f_wall1 = gui.addFolder('Wall 1');
+  var f_wall1 = f_surfaces.addFolder('Wall 1');
   f_wall1.add(params.wall1, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall1', 'temperature', params.wall1.temperature, false) });
   f_wall1.add(params.wall1, 'emissivity').min(0).max(1).step(0.01)
@@ -750,7 +753,7 @@ function init() {
 
   // Wall 2 gui /////////////////////
 
-  var f_wall2 = gui.addFolder('Wall 2');
+  var f_wall2 = f_surfaces.addFolder('Wall 2');
   f_wall2.add(params.wall2, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall2', 'temperature', params.wall2.temperature, false) });
   f_wall2.add(params.wall2, 'emissivity').min(0).max(1).step(0.01)
@@ -778,7 +781,7 @@ function init() {
 
   // Wall 3 gui /////////////////////
 
-  var f_wall3 = gui.addFolder('Wall 3');
+  var f_wall3 = f_surfaces.addFolder('Wall 3');
   f_wall3.add(params.wall3, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall3', 'temperature', params.wall3.temperature, false) });
   f_wall3.add(params.wall3, 'emissivity').min(0).max(1).step(0.01)
@@ -806,7 +809,7 @@ function init() {
 
   // Wall 4 gui /////////////////////
 
-  var f_wall4 = gui.addFolder('Wall 4');
+  var f_wall4 = f_surfaces.addFolder('Wall 4');
   f_wall4.add(params.wall4, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall4', 'temperature', params.wall4.temperature, false) });
   f_wall4.add(params.wall4, 'emissivity').min(0).max(1).step(0.01)
@@ -834,7 +837,7 @@ function init() {
 
   // Ceiling gui /////////////////////
 
-  var f_ceiling = gui.addFolder('Ceiling')
+  var f_ceiling = f_surfaces.addFolder('Ceiling')
   f_ceiling.add(params.ceiling, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('ceiling', 'temperature', params.ceiling.temperature, false) });
   f_ceiling.add(params.ceiling, 'emissivity').min(0).max(1).step(0.01)
@@ -862,7 +865,7 @@ function init() {
 
   // Floor gui /////////////////////
 
-  var f_floor = gui.addFolder('Floor');
+  var f_floor = f_surfaces.addFolder('Floor');
   f_floor.add(params.floor, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('floor', 'temperature', params.floor.temperature, false) });
   f_floor.add(params.floor, 'emissivity').min(0).max(1).step(0.01)
@@ -890,7 +893,9 @@ function init() {
 
   // Occupant gui /////////////////////
 
-  gui.add(mrt.occupant, 'posture', [ 'seated', 'standing' ] )
+  var f_occupant = gui.addFolder('Occupant')
+
+  f_occupant.add(mrt.occupant, 'posture', [ 'seated', 'standing' ] )
     .onFinishChange(function(){
       calculate_all();
     })
@@ -941,6 +946,30 @@ function init() {
   solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'Rfloor').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+
+  // Comfort
+  
+  comfort = {
+      'ta': 25,
+      'tr': 25,
+      'vel': 0.15,
+      'rh': 50,
+      'met': 1.1,
+      'clo': 0.5
+  }
+  var f_comfort = gui.addFolder('Thermal Comfort')
+  f_comfort.add(comfort, 'ta').min(0).max(50).step(0.1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  f_comfort.add(comfort, 'tr').min(0).max(50).step(0.1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  f_comfort.add(comfort, 'rh').min(0).max(100).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  f_comfort.add(comfort, 'vel').min(0).max(4).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  f_comfort.add(comfort, 'met').min(0).max(4).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  f_comfort.add(comfort, 'clo').min(0).max(4).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
 
   function set_panel_guis(){
