@@ -900,7 +900,7 @@ function init() {
       calculate_all();
     })
 
-  gui.add(params, 'azimuth').min(0.0).max(360).step(1)
+  f_occupant.add(params, 'azimuth').min(0.0).max(360).step(1)
     .onFinishChange(function(){
       mrt.occupant.azimuth = Math.PI * params.azimuth / 180;
       calculate_all();
@@ -911,13 +911,14 @@ function init() {
   gui.add(params, 'display', [
           'MRT',
           'Longwave MRT', 
+          'Shortwave dMRT',
           'Direct shortwave', 
           'Diffuse shortwave', 
           'Reflected shortwave', 
-          'Shortwave dMRT', 
+          'PMV'
   ]).onFinishChange(function(){ do_fast_stuff(); });
-  gui.add(params, 'autocalculate');
   gui.add(params, 'calculate now');
+  gui.add(params, 'autocalculate');
 
   // SolarCal 
 
@@ -952,7 +953,6 @@ function init() {
   
   comfort = {
       'ta': 25,
-      'tr': 25,
       'vel': 0.15,
       'rh': 50,
       'met': 1.1,
@@ -960,8 +960,6 @@ function init() {
   }
   var f_comfort = gui.addFolder('Thermal Comfort')
   f_comfort.add(comfort, 'ta').min(0).max(50).step(0.1)
-    .onFinishChange(function(){ do_fast_stuff(); });
-  f_comfort.add(comfort, 'tr').min(0).max(50).step(0.1)
     .onFinishChange(function(){ do_fast_stuff(); });
   f_comfort.add(comfort, 'rh').min(0).max(100).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
@@ -1229,7 +1227,17 @@ function update_visualization(){
     vertex_values = _.map(ERF_vertex_values, function(v){
       return v.dMRT;
     });
-  } 
+  } else if (params.display == 'PMV') {
+    var mrt_values = _.map(view_factors, function(vfs){ 
+      return mrt.calc(vfs);
+    });
+    vertex_values = _.map(mrt_values, function(mrt_val) {
+      var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_val, 
+        comfort.vel, comfort.rh, comfort.met, comfort.clo, 0);
+      return my_pmv.pmv;
+    });
+    
+  }
 
   scale_min = _.min(vertex_values);
   scale_max = _.max(vertex_values);
