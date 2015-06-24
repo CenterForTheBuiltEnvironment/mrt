@@ -264,10 +264,14 @@ function set_wall_properties(){
 
 function gen_zone_geometry(){
 
-    var wall1 = { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
-      {'x': mrt.room.width, 'y': 0, 'z': 0},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
-      {'x': 0, 'y': mrt.room.height, 'z': 0}],
+    var wall1 = { 
+        'vertices': [
+          {'x': 0, 'y': 0, 'z': 0},
+          {'x': mrt.room.width, 'y': 0, 'z': 0},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
+          {'x': 0, 'y': mrt.room.height, 'z': 0}
+        ],
+        'name': 'wall1'
     };
     if (params.wall1.panel.active){
       var u0 = params.wall1.panel.xposition;
@@ -291,10 +295,14 @@ function gen_zone_geometry(){
       wall1.children = [];
     }
 
-    var wall2 = { 'vertices': [{'x': mrt.room.width, 'y': 0, 'z': 0},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
-      {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth}],
+    var wall2 = {
+        'vertices': [
+          {'x': mrt.room.width, 'y': 0, 'z': 0},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
+          {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth}
+        ],
+        'name': 'wall2'
     };
     if (params.wall2.panel.active){
       var u0 = params.wall2.panel.xposition;
@@ -315,10 +323,14 @@ function gen_zone_geometry(){
       wall2.children = [];
     }
 
-    var wall3 = { 'vertices': [{'x': 0, 'y': 0, 'z': mrt.room.depth},
-      {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
-      {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth}],
+    var wall3 = {
+        'vertices': [
+          {'x': 0, 'y': 0, 'z': mrt.room.depth},
+          {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
+          {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth}
+        ],
+        'name': 'wall3'
     };
     
     if (params.wall3.panel.active){
@@ -341,10 +353,14 @@ function gen_zone_geometry(){
     }
     
 
-    var wall4 = { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
-      {'x': 0, 'y': mrt.room.height, 'z': 0},
-      {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth},
-      {'x': 0, 'y': 0, 'z': mrt.room.depth}],
+    var wall4 = {
+        'vertices': [
+          {'x': 0, 'y': 0, 'z': 0},
+          {'x': 0, 'y': mrt.room.height, 'z': 0},
+          {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth},
+          {'x': 0, 'y': 0, 'z': mrt.room.depth}
+        ],
+        'name': 'wall4'
     };
 
     if (params.wall4.panel.active){
@@ -366,10 +382,14 @@ function gen_zone_geometry(){
       wall4.children = [];
     }
     
-    var ceiling = { 'vertices': [{'x': 0, 'y': mrt.room.height, 'z': 0},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
-      {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
-      {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth}],
+    var ceiling = { 
+        'vertices': [
+          {'x': 0, 'y': mrt.room.height, 'z': 0},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
+          {'x': mrt.room.width, 'y': mrt.room.height, 'z': mrt.room.depth},
+          {'x': 0, 'y': mrt.room.height, 'z': mrt.room.depth}
+        ],
+        'name': 'ceiling'
     };
 
     if (params.ceiling.panel.active){
@@ -391,10 +411,14 @@ function gen_zone_geometry(){
       ceiling.children = [];
     }
 
-    var floor = { 'vertices': [{'x': 0, 'y': 0, 'z': 0},
-      {'x': mrt.room.width, 'y': 0, 'z': 0},
-      {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth},
-      {'x': 0, 'y': 0, 'z': mrt.room.depth}],
+    var floor = { 
+        'vertices': [
+          {'x': 0, 'y': 0, 'z': 0},
+          {'x': mrt.room.width, 'y': 0, 'z': 0},
+          {'x': mrt.room.width, 'y': 0, 'z': mrt.room.depth},
+          {'x': 0, 'y': 0, 'z': mrt.room.depth}
+        ],
+       'name': 'floor'
     };
 
     if (params.floor.panel.active){
@@ -433,11 +457,9 @@ function wallPanelGeometry(vertices){
   return geometry;
 }
 
-function wallPanelMesh(geometry, texture){
+function wallPanelMesh(geometry){
   var material = new THREE.MeshPhongMaterial( { 
       color: 0xffffff, 
-      map: texture, 
-      bumpMap: texture, 
       reflectivity: 100, 
       transparent: true, 
       opacity: 1.0 
@@ -457,9 +479,9 @@ function wallPanelMesh(geometry, texture){
 }
 
 function remove_zone() {
-  var objsToRemove = _.rest(scene.children, 1);
+  var objsToRemove = _.rest(scene.children, 3);
   _.each(objsToRemove, function( object ) {
-        scene.remove(object);
+      scene.remove(object);
   });
 }
 
@@ -491,8 +513,8 @@ function render_zone(){
     'y': mrt.room.depth / 20,
   }
   var aspect_ratio = mrt.room.width / mrt.room.depth;
-  var Nx = Math.floor(20.0 / aspect_ratio);
-  var Ny = Math.floor(20.0 * aspect_ratio);
+  var Nx = Math.floor(25.0 * aspect_ratio);
+  var Ny = Math.floor(25.0 / aspect_ratio);
   var plane_geometry = new THREE.PlaneGeometry( mrt.room.width - margin.x, mrt.room.depth - margin.y, Nx, Ny );
 
   var material = new THREE.MeshBasicMaterial({
@@ -518,7 +540,6 @@ function render_zone(){
   for (var i = 0; i < Np; i++){ 
     var p = z[i];
     var wall = wallPanelGeometry(p.vertices);
-    var panel_texture = THREE.ImageUtils.loadTexture( 'img/wall.jpg' );
 
     if (p.children.length > 0){
 
@@ -571,7 +592,7 @@ function render_zone(){
         wallShape.holes.push(hole);
 
         panel.applyMatrix( ti );
-        var mesh = wallPanelMesh(panel, panel_texture);
+        var mesh = wallPanelMesh(panel);
         mesh.name = p.children[k].name;
         scene.add(mesh);
         surfaces.push(mesh);
@@ -583,11 +604,11 @@ function render_zone(){
     }
 
     // wall texture
-    var wall_texture = THREE.ImageUtils.loadTexture( 'img/wall1.jpg' );
+    //var wall_texture = THREE.ImageUtils.loadTexture( 'img/wall1.jpg' );
     var material = new THREE.MeshPhongMaterial( { 
         color: 0xffffff, 
-        map: wall_texture, 
-        bumpMap: wall_texture, 
+        //map: wall_texture, 
+        //bumpMap: wall_texture, 
         reflectivity: 100, 
         transparent: true, 
         opacity: 1.0,
@@ -606,6 +627,8 @@ function render_zone(){
     
     mesh.geometry.computeFaceNormals();
     mesh.geometry.computeVertexNormals();
+
+    mesh.name = p.name;
     scene.add(mesh);
     surfaces.push(mesh);
     
@@ -633,6 +656,30 @@ function init() {
   scene = new THREE.Scene();
   raycaster = new THREE.Raycaster();
   projector = new THREE.Projector();
+
+  var dir = new THREE.Vector3( 1, 0, 0 );
+  var origin = new THREE.Vector3( 1, 0, -4.5 );
+  var length = 3;
+  var hex = 0x000000;
+
+  var arrowHelper = new THREE.ArrowHelper( dir, origin, length, hex, 0.3, 0.3);
+  scene.add( arrowHelper );
+
+  var textGeo = new THREE.TextGeometry("N", {
+      "size": 1, 
+      "height": 0.1
+  });
+  var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
+  var textMesh = new THREE.Mesh(textGeo, textMaterial); 
+  textMesh.position = new THREE.Vector3( 0, 0, -5);
+  textMesh.rotation.x = -Math.PI / 2;
+  textMesh.rotation.z = -Math.PI / 2;
+  scene.add( textMesh );
+
+  var sunGeometry = new THREE.SphereGeometry( 1, 32, 32 );
+  var sunMaterial = new THREE.MeshLambertMaterial( {color: 0xff0000, opacity: 0.8, emissive: 0xffff00} );
+  sun = new THREE.Mesh( sunGeometry, sunMaterial );
+  scene.add( sun );
 
   // Gui
   var gui = new dat.GUI();
@@ -857,13 +904,12 @@ function init() {
   // Etc ... /////////////////////
 
   gui.add(params, 'display', [
+          'MRT',
           'Longwave MRT', 
           'Direct shortwave', 
           'Diffuse shortwave', 
           'Reflected shortwave', 
           'Shortwave dMRT', 
-          'ERF', 
-          'MRT',
   ]).onFinishChange(function(){ do_fast_stuff(); });
   gui.add(params, 'autocalculate');
   gui.add(params, 'calculate now');
@@ -1065,31 +1111,47 @@ function update_shortwave_components() {
   var window_object = _.find(scene.children, function(o){
     return o.name == window_name;
   }); 
-  
-  var sun_position = new THREE.Vector3();
-  var r = 1000; 
+
+  var r = 1.5 * _.max(mrt.room); 
   var alt = solarcal.alt;
   var az = solarcal.az;
 
-  alt_rad = Math.PI * alt / 180;
+  var floor = _.find(scene.children, function(c){
+    return c.name == 'floor';
+  });
+  var skydome_center = new THREE.Vector3(0, 0, 0);
+  for (var i = 0; i < floor.geometry.vertices.length; i++){
+    var v = floor.geometry.vertices[i];
+    skydome_center.add(v);
+  }
+  skydome_center.divideScalar(4);
+
+  alt_rad = Math.PI / 2 - Math.PI * alt / 180;
   az_rad = Math.PI * az / 180;
-  
-  sun_position.x = r * Math.sin(alt_rad) * Math.cos(az_rad);
-  sun_position.y = r * Math.sin(alt_rad);
-  sun_position.z = r * Math.sin(alt_rad) * Math.sin(az_rad);
-      
+
+  sun.position.x = skydome_center.x + r * Math.sin(alt_rad) * Math.cos(az_rad);
+  sun.position.y = skydome_center.y + r * Math.cos(alt_rad);
+  sun.position.z = skydome_center.z + r * Math.sin(alt_rad) * Math.sin(az_rad);
+
   if (window_object) {
     ERF_vertex_values = _.map(plane.geometry.vertices, function(v, i){
       // Check direct exposure
       var my_vector = new THREE.Vector3();
       my_vector.copy(v);
       my_vector.applyMatrix4( plane.matrixWorld );
+
+      var sun_position = new THREE.Vector3();
+      sun_position.copy(sun.position);
+      sun_position.normalize();
+
       raycaster.set(my_vector, sun_position);
       var intersects = raycaster.intersectObject( window_object );
       if (intersects.length == 0){
         var direct = false;
+        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 1, 0xff0000))
       } else {
         var direct = true;
+        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 1, 0x00ff00))
       }
 
       var my_view_factor = _.find(view_factors[i], function(o){
@@ -1114,7 +1176,11 @@ function update_shortwave_components() {
 function update_visualization(){
   var vertex_values; 
 
-  if (params.display == 'Longwave MRT'){
+  if (params.display == 'MRT') {
+    var vertex_values = _.map(view_factors, function(vfs, i){
+      return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
+    });
+  } else if (params.display == 'Longwave MRT'){
     vertex_values = _.map(view_factors, function(vfs){ 
       return mrt.calc(vfs);
     });
@@ -1134,15 +1200,7 @@ function update_visualization(){
     vertex_values = _.map(ERF_vertex_values, function(v){
       return v.dMRT;
     });
-  } else if (params.display == 'ERF') {
-    vertex_values = _.map(ERF_vertex_values, function(v){
-      return v.ERF;
-    });
-  } else if (params.display == 'MRT') {
-    var vertex_values = _.map(view_factors, function(vfs, i){
-      return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
-    });
-  }
+  } 
 
   scale_min = _.min(vertex_values);
   scale_max = _.max(vertex_values);
