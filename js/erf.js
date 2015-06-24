@@ -28,9 +28,9 @@ function get_fp(alt, az, posture){
     if (posture == 'standing'){
         var fp_table = [[0.25,0.25,0.23,0.19,0.15,0.10,0.06],
             [0.25,0.25,0.23,0.18,0.15,0.10,0.06],
-            [0.24,0.24,0.22,,0.18,0.14,0.10,0.06],
+            [0.24,0.24,0.22,0.18,0.14,0.10,0.06],
             [0.22,0.22,0.20,0.17,0.13,0.09,0.06],
-            [0.21,0.21,0.18,0.15,,0.12,0.08,0.06],
+            [0.21,0.21,0.18,0.15,0.12,0.08,0.06],
             [0.18,0.18,0.17,0.14,0.11,0.08,0.06],
             [0.17,0.17,0.16,0.13,0.11,0.08,0.06],
             [0.18,0.18,0.16,0.13,0.11,0.08,0.06],
@@ -234,10 +234,20 @@ function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, Rfloor, direct){
     var E_refl = feff * fsvv * 0.5 * tsol * (Idir * Math.sin(alt * DEG_TO_RAD) + Idiff) * Rfloor;
 
     var E_solar = E_diff + E_direct + E_refl;
+
+    var ERF_direct = E_direct * (sw_abs / lw_abs);
+    var dMRT_direct = ERF_direct / (hr * feff);
+
+    var ERF_diff = E_diff * (sw_abs / lw_abs);
+    var dMRT_diff = ERF_diff / (hr * feff);
+
+    var ERF_refl = E_refl * (sw_abs / lw_abs);
+    var dMRT_refl = ERF_refl / (hr * feff);
+
     var ERF = E_solar * (sw_abs / lw_abs);
     var dMRT = ERF / (hr * feff);
 
-    return {"E_diff": E_diff, "E_direct": E_direct, "E_refl": E_refl, "ERF": ERF, "dMRT": dMRT};
+    return {"dMRT_diff": dMRT_diff, "dMRT_direct": dMRT_direct, "dMRT_refl": dMRT_refl, "ERF": ERF, "dMRT": dMRT};
 }
 
 function ERF_test(){

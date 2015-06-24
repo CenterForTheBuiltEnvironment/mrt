@@ -1,4 +1,3 @@
-
 var container, stats;
 var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
 var surfaces = [];
@@ -526,7 +525,7 @@ function render_zone(){
   plane = new THREE.Mesh( plane_geometry, material );
   plane.rotation.x = Math.PI / 2;
   plane.position.x = mrt.room.width / 2;
-  plane.position.y = mrt.room.height / 2;
+  plane.position.y = (mrt.occupant.posture == 'seated') ? 0.6 : 1.1;
   plane.position.z = mrt.room.depth / 2;
   plane.geometry.dynamic = true; // so that we can change the vertex colors
   plane.name = "visualization";
@@ -650,9 +649,9 @@ function init() {
   container = document.createElement( 'div' );
   document.body.appendChild( container );
   camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
-  camera.position.x = mrt.room.width * 2;
-  camera.position.y = mrt.room.height * 2;
-  camera.position.z = mrt.room.depth * 2;
+  camera.position.x = -10
+  camera.position.y = 10
+  camera.position.z = -10
   scene = new THREE.Scene();
   raycaster = new THREE.Raycaster();
   projector = new THREE.Projector();
@@ -676,7 +675,7 @@ function init() {
   textMesh.rotation.z = -Math.PI / 2;
   scene.add( textMesh );
 
-  var sunGeometry = new THREE.SphereGeometry( 1, 32, 32 );
+  var sunGeometry = new THREE.SphereGeometry( 0.5, 32, 32 );
   var sunMaterial = new THREE.MeshLambertMaterial( {color: 0xff0000, opacity: 0.8, emissive: 0xffff00} );
   sun = new THREE.Mesh( sunGeometry, sunMaterial );
   scene.add( sun );
@@ -912,9 +911,9 @@ function init() {
           'MRT',
           'Longwave MRT', 
           'Shortwave dMRT',
-          'Direct shortwave', 
-          'Diffuse shortwave', 
-          'Reflected shortwave', 
+          'Direct shortwave dMRT', 
+          'Diffuse shortwave dMRT', 
+          'Reflected shortwave dMRT', 
           'PMV'
   ]).onFinishChange(function(){ do_fast_stuff(); });
   gui.add(params, 'calculate now');
@@ -1139,7 +1138,7 @@ function update_shortwave_components() {
     return o.name == window_name;
   }); 
 
-  var r = 1.5 * _.max(mrt.room); 
+  var r = 1.3 * _.max(mrt.room); 
   var alt = solarcal.alt;
   var az = solarcal.az;
 
@@ -1166,26 +1165,31 @@ function update_shortwave_components() {
       var my_vector = new THREE.Vector3();
       my_vector.copy(v);
       my_vector.applyMatrix4( plane.matrixWorld );
+      var my_sun_dir = new THREE.Vector3();
+      my_sun_dir.copy(sun.position);
+      my_sun_dir.sub(my_vector);
 
       var sun_position = new THREE.Vector3();
-      sun_position.copy(sun.position);
+      sun_position.copy(my_sun_dir);
       sun_position.normalize();
 
       raycaster.set(my_vector, sun_position);
       var intersects = raycaster.intersectObject( window_object );
       if (intersects.length == 0){
         var direct = false;
-        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 1, 0xff0000))
+        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0xff0000))
       } else {
         var direct = true;
-        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 1, 0x00ff00))
+        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
       }
 
       var my_view_factor = _.find(view_factors[i], function(o){
          return o.name == solarcal.window_surface + 'panel1';
       }).view_factor;
       var svvf = my_view_factor;
-      var my_erf = ERF(alt, az, mrt.occupant.posture, 
+      var sharp = az - mrt.occupant.azimuth
+      if (sharp < 0) sharp += 360;
+      var my_erf = ERF(alt, sharp, mrt.occupant.posture, 
         solarcal.Idir, solarcal.tsol, svvf, 
         solarcal.fbes, solarcal.asa, solarcal.Rfloor, direct)
       return my_erf;
@@ -1193,7 +1197,7 @@ function update_shortwave_components() {
   } else {
     // if no window object, all components are zero
     ERF_vertex_values = _.map(plane.geometry.vertices, function(){ 
-      return {'E_direct': 0, 'E_diff': 0, 'E_refl': 0, 'dMRT': 0, 'ERF': 0};
+      return {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
     });
       
   }
@@ -1211,25 +1215,25 @@ function update_visualization(){
     vertex_values = _.map(view_factors, function(vfs){ 
       return mrt.calc(vfs);
     });
-  } else if (params.display == 'Direct shortwave') {
-    vertex_values = _.map(ERF_vertex_values, function(v){
-      return v.E_direct;
-    });
-  } else if (params.display == 'Diffuse shortwave') {
-    vertex_values = _.map(ERF_vertex_values, function(v){
-      return v.E_diff;
-    });
-  } else if (params.display == 'Reflected shortwave') {
-    vertex_values = _.map(ERF_vertex_values, function(v){
-      return v.E_refl;
-    });
   } else if (params.display == 'Shortwave dMRT') {
     vertex_values = _.map(ERF_vertex_values, function(v){
       return v.dMRT;
     });
+  } else if (params.display == 'Direct shortwave dMRT') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.dMRT_direct;
+    });
+  } else if (params.display == 'Diffuse shortwave dMRT') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.dMRT_diff;
+    });
+  } else if (params.display == 'Reflected shortwave dMRT') {
+    vertex_values = _.map(ERF_vertex_values, function(v){
+      return v.dMRT_refl;
+    });
   } else if (params.display == 'PMV') {
-    var mrt_values = _.map(view_factors, function(vfs){ 
-      return mrt.calc(vfs);
+    var mrt_values = _.map(view_factors, function(vfs, i){
+      return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
     });
     vertex_values = _.map(mrt_values, function(mrt_val) {
       var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_val, 
