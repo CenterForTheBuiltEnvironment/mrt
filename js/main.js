@@ -1165,8 +1165,14 @@ function update_shortwave_components() {
       var my_vector = new THREE.Vector3();
       my_vector.copy(v);
       my_vector.applyMatrix4( plane.matrixWorld );
+
+      // this vector is used for the sun's position in
+      // computations whereas the sun object is an icon
       var my_sun_dir = new THREE.Vector3();
       my_sun_dir.copy(sun.position);
+      my_sun_dir.sub(skydome_center);
+      my_sun_dir.multiplyScalar(100);
+      my_sun_dir.add(skydome_center);
       my_sun_dir.sub(my_vector);
 
       var sun_position = new THREE.Vector3();
