@@ -512,8 +512,8 @@ function render_zone(){
     'y': mrt.room.depth / 20,
   }
   var aspect_ratio = mrt.room.width / mrt.room.depth;
-  var Nx = Math.floor(25.0 * aspect_ratio);
-  var Ny = Math.floor(25.0 / aspect_ratio);
+  var Nx = Math.floor(26.0 * aspect_ratio);
+  var Ny = Math.floor(26.0 / aspect_ratio);
   var plane_geometry = new THREE.PlaneGeometry( mrt.room.width - margin.x, mrt.room.depth - margin.y, Nx, Ny );
 
   var material = new THREE.MeshBasicMaterial({
@@ -649,9 +649,9 @@ function init() {
   container = document.createElement( 'div' );
   document.body.appendChild( container );
   camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
-  camera.position.x = -10
-  camera.position.y = 10
-  camera.position.z = -10
+  camera.position.x = -6.0;
+  camera.position.y = 17.0;
+  camera.position.z = -6.0;
   scene = new THREE.Scene();
   raycaster = new THREE.Raycaster();
   projector = new THREE.Projector();
