@@ -97,7 +97,6 @@ params = {
       },
     },
     'display': 'MRT',
-    'autocalculate': true,
     'calculate now': function(){
       calculate_all();
     }
@@ -686,24 +685,18 @@ function init() {
   var f_room = gui.addFolder('Room')
   f_room.add(mrt.room, 'width').min(2).max(100).step(1)
     .onFinishChange(function(){
-      if (params.autocalculate){
-        set_panel_guis();
-        calculate_all();
-      }
+      set_panel_guis();
+      calculate_all();
     });
   f_room.add(mrt.room, 'depth').min(2).max(100).step(1)
     .onFinishChange(function(){
-      if (params.autocalculate){
-        set_panel_guis();
-        calculate_all();
-      }
+      set_panel_guis();
+      calculate_all();
     })
   f_room.add(mrt.room, 'height').min(2).max(16).step(0.1)
     .onFinishChange(function(){
-      if (params.autocalculate){
-        set_panel_guis();
-        calculate_all();
-      }
+      set_panel_guis();
+      calculate_all();
     });
 
   function set_surface_property(surface_name, property, value, panel){         
@@ -713,10 +706,8 @@ function init() {
     } else {
       surface[property] = value;
     }
-    if (params.autocalculate){
-      update_shortwave_components();
-      update_visualization();
-    }
+    update_shortwave_components();
+    update_visualization();
   }
 
   // Surfaces
@@ -917,7 +908,6 @@ function init() {
           'PMV'
   ]).onFinishChange(function(){ do_fast_stuff(); });
   gui.add(params, 'calculate now');
-  gui.add(params, 'autocalculate');
 
   // SolarCal 
 
@@ -1182,11 +1172,9 @@ function update_shortwave_components() {
       raycaster.set(my_vector, sun_position);
       var intersects = raycaster.intersectObject( window_object );
       if (intersects.length == 0){
-        var direct = false;
-        var tsol = 0;
+        var tsol_factor = 0;
         //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0xff0000))
       } else {
-        var direct = true;
         var v_normal = window_object.geometry.faces[0].normal;
         var relative_sun_position = new THREE.Vector3();
         relative_sun_position.copy(sun.position);
@@ -1201,7 +1189,6 @@ function update_shortwave_components() {
         // of incidence, from ASHRAE Handbook 1985 27.14.
         var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3) 
           - 0.0002 * Math.pow(th, 2) + 0.0016 * th + 0.997
-        var tsol = solarcal.tsol * tsol_factor;
         //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
       }
 
@@ -1213,7 +1200,7 @@ function update_shortwave_components() {
       if (sharp < 0) sharp += 360;
       var my_erf = ERF(alt, sharp, mrt.occupant.posture, 
         solarcal.Idir, tsol, svvf, 
-        solarcal.fbes, solarcal.asa, solarcal.Rfloor, direct)
+        solarcal.fbes, solarcal.asa, solarcal.Rfloor, tsol_factor)
       return my_erf;
     });
   } else {

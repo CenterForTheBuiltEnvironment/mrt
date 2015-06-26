@@ -15,7 +15,6 @@ function get_fp(alt, az, posture){
     var fp;
     var alt_range = [0, 15, 30, 45, 60, 75, 90];
     var az_range = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
-    
     var alt_i = find_span(alt_range, alt);
     var az_i = find_span(az_range, az);
 
@@ -69,7 +68,7 @@ function get_fp(alt, az, posture){
     return fp;
 }
 
-function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, Rfloor, direct){
+function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, Rfloor, tsol_factor){
     //  ERF function to estimate the impact of solar radiation on occupant comfort
     //  INPUTS:
     //  alt : altitude of sun in degrees [0, 90]
@@ -100,11 +99,7 @@ function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, Rfloor, direct){
     var sw_abs = asa;
     var lw_abs = 0.95;
 
-    if (direct) {
-      var E_direct = fp * tsol * fbes * Idir;
-    } else {
-      var E_direct = 0;
-    }
+    var E_direct = fp * tsol * fbes * Idir * tsol_factor;
     var E_diff = feff * fsvv * 0.5 * tsol * Idiff;
     var E_refl = feff * fsvv * 0.5 * tsol * (Idir * Math.sin(alt * DEG_TO_RAD) + Idiff) * Rfloor;
 
