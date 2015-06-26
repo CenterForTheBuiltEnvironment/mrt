@@ -1183,9 +1183,25 @@ function update_shortwave_components() {
       var intersects = raycaster.intersectObject( window_object );
       if (intersects.length == 0){
         var direct = false;
+        var tsol = 0;
         //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0xff0000))
       } else {
         var direct = true;
+        var v_normal = window_object.geometry.faces[0].normal;
+        var relative_sun_position = new THREE.Vector3();
+        relative_sun_position.copy(sun.position);
+        relative_sun_position.sub(skydome_center);
+        relative_sun_position.normalize();
+        var dot = v_normal.dot(relative_sun_position);
+        var th = (180 * Math.acos(dot) / Math.PI);
+        if (th > 90) th = 180 - th;
+
+        // this equation is a fit of an empirical model of
+        // clear glass transmittance as a function of angle
+        // of incidence, from ASHRAE Handbook 1985 27.14.
+        var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3) 
+          - 0.0002 * Math.pow(th, 2) + 0.0016 * th + 0.997
+        var tsol = solarcal.tsol * tsol_factor;
         //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
       }
 
@@ -1196,7 +1212,7 @@ function update_shortwave_components() {
       var sharp = az - mrt.occupant.azimuth
       if (sharp < 0) sharp += 360;
       var my_erf = ERF(alt, sharp, mrt.occupant.posture, 
-        solarcal.Idir, solarcal.tsol, svvf, 
+        solarcal.Idir, tsol, svvf, 
         solarcal.fbes, solarcal.asa, solarcal.Rfloor, direct)
       return my_erf;
     });
