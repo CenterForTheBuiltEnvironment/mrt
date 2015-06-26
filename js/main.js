@@ -1199,7 +1199,7 @@ function update_shortwave_components() {
       var sharp = az - mrt.occupant.azimuth
       if (sharp < 0) sharp += 360;
       var my_erf = ERF(alt, sharp, mrt.occupant.posture, 
-        solarcal.Idir, tsol, svvf, 
+        solarcal.Idir, solarcal.tsol, svvf, 
         solarcal.fbes, solarcal.asa, solarcal.Rfloor, tsol_factor)
       return my_erf;
     });

@@ -12,6 +12,9 @@ function find_span(arr, x){
 function get_fp(alt, az, posture){
     //  alt : altitude of sun in degrees [0, 90] Integer
     //  az : azimuth of sun in degrees [0, 180] Integer
+    if (az > 180) {
+      az = 360 - az;
+    }
     var fp;
     var alt_range = [0, 15, 30, 45, 60, 75, 90];
     var az_range = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
