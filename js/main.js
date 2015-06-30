@@ -1041,7 +1041,7 @@ function calculate_all(){
 
 }
 
-var do_fast_stuff = function(){
+function do_fast_stuff(){
   update_shortwave_components();
   update_visualization();
 };
@@ -1067,32 +1067,64 @@ function animate() {
   stats.update();
 }
 
-function invert_color(color) {
-  var t = mrt_min + color.r * (mrt_max - mrt_min);
-  return t;
+function calculate_view_factors(point) {
+  mrt.occupant.position.x = point.x;
+  mrt.occupant.position.y = point.z;
+  var my_vfs = mrt.view_factors();
+  return my_vfs;
 }
 
 function render() {
   var vector = new THREE.Vector3( mouse.x, mouse.y, 1 );
   projector.unprojectVector( vector, camera );
+
   raycaster.set( camera.position, vector.sub( camera.position ).normalize() );
   var intersects = raycaster.intersectObject( plane, true );
   if ( intersects.length > 0 ) {
-    // quick method for calculating the mrt
-    // var t = invert_color(intersects[0].face.vertexColors[0]);
-
-    mrt.occupant.position.x = intersects[0].point.x;
-    mrt.occupant.position.y = intersects[0].point.z;
-    var myvfs = mrt.view_factors();
-    var t = mrt.calc(myvfs);
-
+    var display_value;
+    var view_factors = calculate_view_factors(intersects[0].point);
+    var longwave_mrt = mrt.calc(view_factors);
+    var window_name = solarcal.window_surface + 'panel1';
+    solarcal.window_object = _.find(scene.children, function(o){
+      return o.name == window_name;
+    }); 
+    if (solarcal.window_object) {
+      var window_object_vf = _.find(view_factors, function(o){
+        return o.name == solarcal.window_surface + 'panel1';
+      }).view_factor;
+      var my_erf = calculate_erf_point(intersects[0].point, 
+          solarcal.skydome_center, solarcal.window_object, window_object_vf);
+    } else {
+      my_erf = {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
+    }
+      
+    if (params.display === "Longwave MRT") {
+      display_value = longwave_mrt;
+    } else if (params.display === "MRT"){
+      display_value = longwave_mrt + my_erf.dMRT;
+    } else if (params.display === "Shortwave dMRT") {
+      display_value = my_erf.dMRT;
+    } else if (params.display === "Direct shortwave dMRT") {
+      display_value = my_erf.dMRT_direct;
+    } else if (params.display === "Diffuse shortwave dMRT") {
+      display_value = my_erf.dMRT_diff;
+    } else if (params.display === "Reflected shortwave dMRT") {
+      display_value = my_erf.dMRT_refl;
+    } else if (params.display === "PMV") {
+      var mrt_total = longwave_mrt + my_erf.dMRT;
+      var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_total, 
+        comfort.vel, comfort.rh, comfort.met, comfort.clo, 0);
+      display_value = my_pmv.pmv;
+    }
     document.getElementById('occupant-position').innerHTML = "Occupant (x, y): (" 
       + intersects[0].point.x.toFixed(1) + ", " + intersects[0].point.z.toFixed(1) + ")";
-    document.getElementById('cursor-temperature').innerHTML = "MRT: " + t.toFixed(1);
+    document.getElementById('cursor-temperature').innerHTML = params.display + ": " 
+      + display_value.toFixed(1);
   } else {
     document.getElementById('cursor-temperature').innerHTML = "";
     document.getElementById('occupant-position').innerHTML = "";
   }
+
   directionalLight.position.copy( camera.position );
   directionalLight.position.normalize();
   renderer.render( scene, camera );
@@ -1124,93 +1156,93 @@ function update_view_factors(){
 function update_shortwave_components() {
 
   var window_name = solarcal.window_surface + 'panel1';
-  var window_object = _.find(scene.children, function(o){
+  solarcal.window_object = _.find(scene.children, function(o){
     return o.name == window_name;
   }); 
 
   var r = 1.3 * _.max(mrt.room); 
-  var alt = solarcal.alt;
-  var az = solarcal.az;
 
   var floor = _.find(scene.children, function(c){
     return c.name == 'floor';
   });
-  var skydome_center = new THREE.Vector3(0, 0, 0);
+  solarcal.skydome_center = new THREE.Vector3(0, 0, 0);
   for (var i = 0; i < floor.geometry.vertices.length; i++){
     var v = floor.geometry.vertices[i];
-    skydome_center.add(v);
+    solarcal.skydome_center.add(v);
   }
-  skydome_center.divideScalar(4);
+  solarcal.skydome_center.divideScalar(4);
 
-  alt_rad = Math.PI / 2 - Math.PI * alt / 180;
-  az_rad = Math.PI * az / 180;
+  alt_rad = Math.PI / 2 - Math.PI * solarcal.alt / 180;
+  az_rad = Math.PI * solarcal.az / 180;
 
-  sun.position.x = skydome_center.x + r * Math.sin(alt_rad) * Math.cos(az_rad);
-  sun.position.y = skydome_center.y + r * Math.cos(alt_rad);
-  sun.position.z = skydome_center.z + r * Math.sin(alt_rad) * Math.sin(az_rad);
+  sun.position.x = solarcal.skydome_center.x + r * Math.sin(alt_rad) * Math.cos(az_rad);
+  sun.position.y = solarcal.skydome_center.y + r * Math.cos(alt_rad);
+  sun.position.z = solarcal.skydome_center.z + r * Math.sin(alt_rad) * Math.sin(az_rad);
 
-  if (window_object) {
+  if (solarcal.window_object) {
     ERF_vertex_values = _.map(plane.geometry.vertices, function(v, i){
-      // Check direct exposure
-      var my_vector = new THREE.Vector3();
-      my_vector.copy(v);
-      my_vector.applyMatrix4( plane.matrixWorld );
-
-      // this vector is used for the sun's position in
-      // computations whereas the sun object is an icon
-      var my_sun_dir = new THREE.Vector3();
-      my_sun_dir.copy(sun.position);
-      my_sun_dir.sub(skydome_center);
-      my_sun_dir.multiplyScalar(100);
-      my_sun_dir.add(skydome_center);
-      my_sun_dir.sub(my_vector);
-
-      var sun_position = new THREE.Vector3();
-      sun_position.copy(my_sun_dir);
-      sun_position.normalize();
-
-      raycaster.set(my_vector, sun_position);
-      var intersects = raycaster.intersectObject( window_object );
-      if (intersects.length == 0){
-        var tsol_factor = 0;
-        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0xff0000))
-      } else {
-        var v_normal = window_object.geometry.faces[0].normal;
-        var relative_sun_position = new THREE.Vector3();
-        relative_sun_position.copy(sun.position);
-        relative_sun_position.sub(skydome_center);
-        relative_sun_position.normalize();
-        var dot = v_normal.dot(relative_sun_position);
-        var th = (180 * Math.acos(dot) / Math.PI);
-        if (th > 90) th = 180 - th;
-
-        // this equation is a fit of an empirical model of
-        // clear glass transmittance as a function of angle
-        // of incidence, from ASHRAE Handbook 1985 27.14.
-        var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3) 
-          - 0.0002 * Math.pow(th, 2) + 0.0016 * th + 0.997
-        //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
-      }
-
-      var my_view_factor = _.find(view_factors[i], function(o){
-         return o.name == solarcal.window_surface + 'panel1';
+      var window_object_vf = _.find(view_factors[i], function(o){
+        return o.name == solarcal.window_surface + 'panel1';
       }).view_factor;
-      var svvf = my_view_factor;
-      var sharp = az - mrt.occupant.azimuth
-      if (sharp < 0) sharp += 360;
-      var my_erf = ERF(alt, sharp, mrt.occupant.posture, 
-        solarcal.Idir, solarcal.tsol, svvf, 
-        solarcal.fbes, solarcal.asa, solarcal.Rfloor, tsol_factor)
-      return my_erf;
+      return calculate_erf_point(v, solarcal.skydome_center, solarcal.window_object, window_object_vf);
     });
   } else {
     // if no window object, all components are zero
     ERF_vertex_values = _.map(plane.geometry.vertices, function(){ 
       return {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
     });
-      
+  }
+}
+
+function calculate_erf_point(v, skydome_center, window_object, window_object_vf){
+  // Check direct exposure
+  var my_vector = new THREE.Vector3();
+  my_vector.copy(v);
+  my_vector.applyMatrix4( plane.matrixWorld );
+
+  // this vector is used for the sun's position in
+  // computations whereas the sun object is an icon
+  var my_sun_dir = new THREE.Vector3();
+  my_sun_dir.copy(sun.position);
+  my_sun_dir.sub(skydome_center);
+  my_sun_dir.multiplyScalar(100);
+  my_sun_dir.add(skydome_center);
+  my_sun_dir.sub(my_vector);
+
+  var sun_position = new THREE.Vector3();
+  sun_position.copy(my_sun_dir);
+  sun_position.normalize();
+
+  raycaster.set(my_vector, sun_position);
+  var intersects = raycaster.intersectObject( window_object );
+  if (intersects.length == 0){
+    var tsol_factor = 0;
+    //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0xff0000))
+  } else {
+    var v_normal = solarcal.window_object.geometry.faces[0].normal;
+    var relative_sun_position = new THREE.Vector3();
+    relative_sun_position.copy(sun.position);
+    relative_sun_position.sub(skydome_center);
+    relative_sun_position.normalize();
+    var dot = v_normal.dot(relative_sun_position);
+    var th = (180 * Math.acos(dot) / Math.PI);
+    if (th > 90) th = 180 - th;
+
+    // this equation is a fit of an empirical model of
+    // clear glass transmittance as a function of angle
+    // of incidence, from ASHRAE Handbook 1985 27.14.
+    var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3) 
+      - 0.0002 * Math.pow(th, 2) + 0.0016 * th + 0.997
+    //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
   }
 
+  var svvf = window_object_vf;
+  var sharp = solarcal.az - mrt.occupant.azimuth;
+  if (sharp < 0) sharp += 360;
+  var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture, 
+    solarcal.Idir, solarcal.tsol, svvf, 
+    solarcal.fbes, solarcal.asa, solarcal.Rfloor, tsol_factor)
+  return my_erf;
 }
 
 function update_visualization(){
