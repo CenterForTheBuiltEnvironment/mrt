@@ -1180,11 +1180,14 @@ function update_shortwave_components() {
   sun.position.z = solarcal.skydome_center.z + r * Math.sin(alt_rad) * Math.sin(az_rad);
 
   if (solarcal.window_object) {
+    var window_surface = solarcal.window_surface;
+    var window_object = solarcal.window_object;
+    var skydome_center = solarcal.skydome_center;
     ERF_vertex_values = _.map(plane.geometry.vertices, function(v, i){
       var window_object_vf = _.find(view_factors[i], function(o){
-        return o.name == solarcal.window_surface + 'panel1';
+        return o.name == window_surface + 'panel1';
       }).view_factor;
-      return calculate_erf_point(v, solarcal.skydome_center, solarcal.window_object, window_object_vf);
+      return calculate_erf_point(v, skydome_center, window_object, window_object_vf);
     });
   } else {
     // if no window object, all components are zero
