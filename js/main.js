@@ -98,7 +98,10 @@ params = {
     },
     'display': 'MRT',
     'update view factors': function(){
-      calculate_all(true);
+      document.getElementById('calculating').style.display = "";
+      setTimeout(function() {
+        calculate_all(true);
+      }, 1000); 
     }
 };
 
@@ -349,7 +352,6 @@ function gen_zone_geometry(){
     } else {
       wall3.children = [];
     }
-    
 
     var wall4 = {
         'vertices': [
@@ -1065,6 +1067,7 @@ function calculate_all(_update_view_factors){
   setTimeout(function(){ 
     if (_update_view_factors) {
       update_view_factors();
+      document.getElementById('calculating').style.display = "none";
     }
     do_fast_stuff();
   }, 1);

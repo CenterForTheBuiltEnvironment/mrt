@@ -79,6 +79,18 @@
         font-size: 1.2em;
         width: 20%;
       }
+    
+      div#calculating {
+        position: absolute;
+        top: 0px;
+        left: 0px;
+        width: 100%;
+        height: 100%;
+        opacity: 0.7;
+        text-align: center;
+        padding-top: 40%;
+        background-color: #ddd; 
+      }
 
     </style>
   </head>
@@ -103,6 +115,7 @@
     <div class="scale-label" id="scale-minimum"></div>
     <div class="scale-label" id="occupant-position"></div>
     <div class="scale-label" id="cursor-temperature"></div>
+    <div id="calculating" style="display: none;">Calculating ... </div>
 
     <script type="text/javascript" src="js/main.js"></script>
   </body>
