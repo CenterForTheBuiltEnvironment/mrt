@@ -1,4 +1,4 @@
-var container, stats;
+var container;
 var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
 var surfaces = [];
 var mouse = new THREE.Vector2();
@@ -1044,11 +1044,6 @@ function init() {
 
   container.appendChild( renderer.domElement );
   
-  stats = new Stats();
-  stats.domElement.style.position = 'absolute';
-  stats.domElement.style.top = '0px';
-  container.appendChild( stats.domElement );
-
   window.addEventListener( 'resize', onWindowResize, false );
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
   
@@ -1105,7 +1100,6 @@ function onDocumentMouseMove( event ) {
 function animate() {
   requestAnimationFrame( animate );
   render();
-  stats.update();
 }
 
 function calculate_view_factors(point) {
