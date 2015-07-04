@@ -101,7 +101,7 @@ params = {
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
         calculate_all(true);
-      }, 1000); 
+      }, 0); 
     }
 };
 
