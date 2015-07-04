@@ -18,7 +18,7 @@ This menu contains the **width** (m), **depth** (m), and **height** (m) of the s
 
 Surfaces
 --------
-This menu contains all of the parameters for each of the walls, floor and ceiling. Each Menu contains a *temperature* (C), *emissivity*, and a menu for a subsurface.
+This menu contains all of the parameters for each of the walls, floor and ceiling. Each menu contains a *temperature* (C), *emissivity*, and a menu for a subsurface.
 
 A subsurface is any surface contained in the wall, including a window, skylight, radiant panel, or otherwise. Its parameters are *temperature* (C), *emissivity*, **width** (m), **height** (m), **xposition** (m), **yposition** (m), and **active**.
 
@@ -34,23 +34,23 @@ SolarCal
 --------
 For modeling the effects of shortwave radiation, use the SolarCal section and subsurfaces to include windows. For a detailed explanation of these parameters, see [Arens et al.](http://escholarship.org)
 
-*window_surface*: determines which of the subsurfaces to be treated as a window. 
-*alt* (degrees from horizontal): solar altitude.
-*az* (degrees clockwise from north): solar azimuth.
-*fbes*: fraction of body exposed to sun.
-*tsol*: window solar transmittance.
-*asa*: average shortwave absorptivity.
-*Rfloor*: floor reflectivity
+- *window_surface*: determines which of the subsurfaces to be treated as a window. 
+- *alt* (degrees from horizontal): solar altitude.
+- *az* (degrees clockwise from north): solar azimuth.
+- *fbes*: fraction of body exposed to sun.
+- *tsol*: window solar transmittance.
+- *asa*: average shortwave absorptivity.
+- *Rfloor*: floor reflectivity
 
 Thermal Comfort
 ---------------
 This tool also includes the basic PMV model of the [CBE Thermal Comfort Tool](http://comfort.cbe.berkeley.edu). 
 
-*ta* (C): air temperature.
-*rh* (%): relative humidity.
-*vel* (m/s): air velocity.
-*met* (met): metabolic rate.
-*clo* (clo): clothing level.
+- *ta* (C): air temperature.
+- *rh* (%): relative humidity.
+- *vel* (m/s): air velocity.
+- *met* (met): metabolic rate.
+- *clo* (clo): clothing level.
 
 Running locally
 ========================
