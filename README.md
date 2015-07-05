@@ -52,9 +52,9 @@ This tool also includes the basic PMV model of the [CBE Thermal Comfort Tool](ht
 - *met* (met): metabolic rate.
 - *clo* (clo): clothing level.
 
-Running locally
+Running locally (advanced)
 ========================
-Clone this repo:
+For those that want to work with the source code or run the tool locally, start by cloning this repo:
 
     git clone https://github.com/centerforthebuiltenvironment/mrt.git
     cd mrt
@@ -64,4 +64,4 @@ Initialize and update submodules:
     git submodule init
     git submodule update
 
-Open index.html in a browser with WebGL.
+Open index.html in a browser with WebGL, such as the latest version of Chrome.
