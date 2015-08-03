@@ -32,15 +32,15 @@ This menu contains parameters relating to the occupant's position. This includes
 
 SolarCal
 --------
-For modeling the effects of shortwave radiation, use the SolarCal section and subsurfaces to include windows. For a detailed explanation of these parameters, see [Arens et al.](http://escholarship.org)
+For modeling the effects of shortwave radiation, use the SolarCal section and subsurfaces to include windows. For a detailed explanation of these parameters, see [Arens et al.](https://escholarship.org/uc/item/89m1h2dg)
 
-- *window_surface*: determines which of the subsurfaces to be treated as a window. 
+- *window surface*: determines which of the subsurfaces to be treated as a window. 
 - *alt* (degrees from horizontal): solar altitude.
 - *az* (degrees clockwise from north): solar azimuth.
 - *fbes*: fraction of body exposed to sun.
 - *tsol*: window solar transmittance.
 - *asa*: average shortwave absorptivity.
-- *Rfloor*: floor reflectivity
+- *Rfloor*: floor reflectivity.
 
 Thermal Comfort
 ---------------
