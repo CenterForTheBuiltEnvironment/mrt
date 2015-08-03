@@ -1120,6 +1120,10 @@ function render() {
   var intersects = raycaster.intersectObject( plane, true );
   if ( intersects.length > 0 ) {
     var display_value;
+    var my_point = intersects[0].point.clone();
+    my_point.x = my_point.x - mrt.room.width / 2;
+    my_point.y = my_point.z - mrt.room.depth / 2;
+    my_point.z = 0;
     var view_factors = calculate_view_factors(intersects[0].point);
     var longwave_mrt = mrt.calc(view_factors);
     var window_name = solarcal.window_surface + 'panel1';
@@ -1130,7 +1134,7 @@ function render() {
       var window_object_vf = _.find(view_factors, function(o){
         return o.name == solarcal.window_surface + 'panel1';
       }).view_factor;
-      var my_erf = calculate_erf_point(intersects[0].point, 
+      var my_erf = calculate_erf_point(my_point, 
           solarcal.skydome_center, solarcal.window_object, window_object_vf);
     } else {
       my_erf = {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
