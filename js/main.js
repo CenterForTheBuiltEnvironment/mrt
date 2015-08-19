@@ -956,7 +956,6 @@ function init() {
       'fbes': 0.5, 
       'tsol': 0.8, 
       'Idir': 700,
-      'tsol': 0.8,
       'asa': 0.7,
       'Rfloor': 0.5,
       'window_surface': 'wall1'
@@ -971,6 +970,8 @@ function init() {
   solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
