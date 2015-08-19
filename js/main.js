@@ -1252,7 +1252,7 @@ function calculate_erf_point(v, skydome_center, window_object, window_object_vf)
   var my_sun_dir = new THREE.Vector3();
   my_sun_dir.copy(sun.position);
   my_sun_dir.sub(skydome_center);
-  my_sun_dir.multiplyScalar(100);
+  my_sun_dir.multiplyScalar(1000);
   my_sun_dir.add(skydome_center);
   my_sun_dir.sub(my_vector);
 
