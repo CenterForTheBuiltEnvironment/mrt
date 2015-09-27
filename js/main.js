@@ -957,7 +957,6 @@ function init() {
       'tsol': 0.8, 
       'Idir': 700,
       'asa': 0.7,
-      'Rfloor': 0.5,
       'window_surface': 'wall1'
   }
   var solarcal_f = gui.addFolder('SolarCal');
@@ -974,8 +973,6 @@ function init() {
   solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
-    .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'Rfloor').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
 
   // Comfort
@@ -1288,7 +1285,7 @@ function calculate_erf_point(v, skydome_center, window_object, window_object_vf)
   if (sharp < 0) sharp += 360;
   var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture, 
     solarcal.Idir, solarcal.tsol, svvf, 
-    solarcal.fbes, solarcal.asa, solarcal.Rfloor, tsol_factor)
+    solarcal.fbes, solarcal.asa, tsol_factor)
   return my_erf;
 }
 
