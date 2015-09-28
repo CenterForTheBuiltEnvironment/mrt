@@ -12,17 +12,8 @@ function find_span(arr, x){
 function get_fp(alt, az, posture){
     //  alt : altitude of sun in degrees [0, 90] Integer
     //  az : azimuth of sun in degrees [0, 180] Integer
-    if (az > 180) {
-      az = 360 - az;
-    }
-    var fp;
-    var alt_range = [0, 15, 30, 45, 60, 75, 90];
-    var az_range = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
-    var alt_i = find_span(alt_range, alt);
-    var az_i = find_span(az_range, az);
 
-    // standing 
-    if (posture == 'standing'){
+    if (posture == 'standing' || posture == 'supine'){
         var fp_table = [[0.25375,0.25375,0.22765,0.18705,0.14935,0.1044,0.05945],
             [0.24795,0.24795,0.22475,0.1827,0.145,0.1015,0.05945],
             [0.23925,0.23925,0.2175,,0.1769,0.13775,0.0957,0.05945],
@@ -51,6 +42,22 @@ function get_fp(alt, az, posture){
             [0.212976,0.174,0.12528,0.108576,0.108576,0.115536,0.123192],
             [0.2088,0.16704,0.116928,0.105792,0.105792,0.114144,0.123192]];
     }
+
+    if (az > 180) {
+      az = 360 - az;
+    }
+    if (posture == 'supine') {
+      // transpose alt and az for a supine person
+      alt_temp = alt;
+      alt = Math.abs(90 - az)
+      az = alt_temp;
+    }
+
+    var fp;
+    var alt_range = [0, 15, 30, 45, 60, 75, 90];
+    var az_range = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
+    var alt_i = find_span(alt_range, alt);
+    var az_i = find_span(az_range, az);
     var fp11 = fp_table[az_i][alt_i];
     var fp12 = fp_table[az_i][alt_i+1];
     var fp21 = fp_table[az_i+1][alt_i];
@@ -76,7 +83,7 @@ function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, tsol_factor){
     //  INPUTS:
     //  alt : altitude of sun in degrees [0, 90]
     //  az : azimuth of sun in degrees [0, 180]
-    //  posture: posture of occupant ('seated' or 'standing')
+    //  posture: posture of occupant ('seated', 'standing', or 'supine')
     //  Idir : direct beam intensity (normal)
     //  tsol: total solar transmittance (SC * 0.87)
     //  fsvv : sky vault view fraction : fraction of sky vault in occupant's view [0, 1]
@@ -97,12 +104,12 @@ function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, tsol_factor){
     
     var fp = get_fp(alt, az, posture);
     
-    if (posture=='standing'){
+    if (posture=='standing' || posture=='supine'){
         var feff = 0.725;
     } else if (posture=='seated'){
         var feff = 0.696;
     } else {
-        console.log("Invalid posture (choose seated or seated)");
+        console.log("Invalid posture (choose seated, seated, or supine)");
         return;
     }
 

@@ -922,7 +922,7 @@ function init() {
 
   var f_occupant = gui.addFolder('Occupant')
 
-  f_occupant.add(mrt.occupant, 'posture', [ 'seated', 'standing' ] )
+  f_occupant.add(mrt.occupant, 'posture', [ 'seated', 'standing', 'supine' ] )
     .onFinishChange(function(){
       view_factors_need_updating = true;
       calculate_all();
