@@ -97,6 +97,9 @@ params = {
       },
     },
     'display': 'MRT',
+    'autoscale': true,
+    'scaleMin': 20.0,
+    'scaleMax': 40.0,
     'update view factors': function(){
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
@@ -946,6 +949,14 @@ function init() {
           'Reflected shortwave dMRT', 
           'PMV'
   ]).onFinishChange(function(){ do_fast_stuff(); });
+
+  gui.add(params, 'autoscale')
+    .onFinishChange(function(){ do_fast_stuff(); });
+  gui.add(params, 'scaleMax').min(0).max(100).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  gui.add(params, 'scaleMin').min(0).max(100).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+
   gui.add(params, 'update view factors');
 
   // SolarCal 
@@ -1335,11 +1346,16 @@ function update_visualization(){
       
     }
   
-    scale_min = _.min(vertex_values);
-    scale_max = _.max(vertex_values);
+    if (params.autoscale) {
+      scale_min = _.min(vertex_values);
+      scale_max = _.max(vertex_values);
+    } else {
+      scale_min = params.scaleMin;
+      scale_max = params.scaleMax;
+    }
   
     document.getElementById("scale-maximum").innerHTML = scale_max.toFixed(1);
-    document.getElementById('scale-minimum').innerHTML = scale_min.toFixed(1);
+    document.getElementById("scale-minimum").innerHTML = scale_min.toFixed(1);
     var vertex_colors = _.map(vertex_values, function(v){
       var value_range = scale_max - scale_min;
       if (value_range == 0){
