@@ -12,6 +12,8 @@ The "display" selectbox allows you to display different values on the blue plane
 
 The "update view factors" button needs to be pressed when the geometry of the space or the occupant's position changes. The visualization plane will turn white and a warning will appear when the view factors need updating. Updating the view factors takes 10-20 seconds. Parameters that will require an update of view factors when changed will be listed below in **bold**.
 
+The "autoscale" checkbox is checked by default. This means that the minimum and maximum values of the colorscale will be calculated automatically to reflect the minimum and maximum MRT (or other value) in the space. This makes it easy to see the spatial resolution of the output. If you wish to fix the range of the colorscale, simply uncheck the box, and choose the minimum and maximum values with the scaleMin and scaleMax sliders.
+
 Room
 ----
 This menu contains the **width** (m), **depth** (m), and **height** (m) of the space.
