@@ -5,13 +5,13 @@ var mouse = new THREE.Vector2();
 
 mrt.occupant = {
     'position': {'x': 1, 'y': 1},
-    'azimuth': 0.0, 
+    'azimuth': 0.0,
     'posture': 'seated',
 };
 
 mrt.room = {
-    'depth': 5.0, 
-    'width': 10.0, 
+    'depth': 5.0,
+    'width': 10.0,
     'height': 2.6,
 }
 
@@ -24,6 +24,7 @@ params = {
       'panel': {
         'active': false,
         'window': true,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 8.0,
@@ -38,6 +39,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 36.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -52,6 +54,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 38.0,
         'emissivity': 0.9,
         'width': 8.0,
@@ -66,6 +69,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -80,6 +84,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 50.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -94,6 +99,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -110,7 +116,7 @@ params = {
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
         calculate_all(true);
-      }, 0); 
+      }, 0);
     }
 };
 
@@ -119,7 +125,7 @@ var view_factors;
 function set_wall_properties(){
   mrt.walls = [
       {
-          'name': 'wall1', 
+          'name': 'wall1',
           'temperature': params.wall1.temperature,
           'emissivity': params.wall1.emissivity,
           'plane': 'xz', // 'xy' plane for webgl geometry
@@ -129,50 +135,50 @@ function set_wall_properties(){
           'subsurfaces': [],
       },
       {
-          'name': 'wall2', 
+          'name': 'wall2',
           'temperature': params.wall2.temperature,
           'emissivity': params.wall2.emissivity,
-          'plane': 'yz', 
+          'plane': 'yz',
           'u': mrt.room.depth,
           'v': mrt.room.height,
           'offset': {'x': mrt.room.width, 'y': 0, 'z': 0},
           'subsurfaces': [],
       },
       {
-          'name': 'wall3', 
+          'name': 'wall3',
           'temperature': params.wall3.temperature,
           'emissivity': params.wall3.emissivity,
-          'plane': 'xz', 
+          'plane': 'xz',
           'u': mrt.room.width,
           'v': mrt.room.height,
           'offset': {'x': 0, 'y': mrt.room.depth, 'z': 0},
           'subsurfaces': [],
       },
       {
-          'name': 'wall4', 
+          'name': 'wall4',
           'temperature': params.wall4.temperature,
           'emissivity': params.wall4.emissivity,
-          'plane': 'yz', 
+          'plane': 'yz',
           'u': mrt.room.depth,
           'v': mrt.room.height,
           'offset': {'x': 0, 'y': 0, 'z': 0},
           'subsurfaces': [],
       },
       {
-          'name': 'ceiling', 
+          'name': 'ceiling',
           'temperature': params.ceiling.temperature,
           'emissivity': params.ceiling.emissivity,
-          'plane': 'xy', 
+          'plane': 'xy',
           'u': mrt.room.width,
           'v': mrt.room.depth,
           'offset': {'x': 0, 'y': 0, 'z': mrt.room.height},
           'subsurfaces': [],
       },
       {
-          'name': 'floor', 
+          'name': 'floor',
           'temperature': params.ceiling.temperature,
           'emissivity': params.ceiling.emissivity,
-          'plane': 'xy', 
+          'plane': 'xy',
           'u': mrt.room.width,
           'v': mrt.room.depth,
           'offset': {'x': 0, 'y': 0, 'z': 0},
@@ -187,7 +193,7 @@ function set_wall_properties(){
           'name': 'wall1panel1',
           'temperature': params.wall1.panel.temperature,
           'emissivity': params.wall1.panel.emissivity,
-          'u': params.wall1.panel.xposition, 
+          'u': params.wall1.panel.xposition,
           'v': params.wall1.panel.yposition,
           'width': params.wall1.panel.width,
           'height': params.wall1.panel.height,
@@ -202,7 +208,7 @@ function set_wall_properties(){
           'name': 'wall2panel1',
           'temperature': params.wall2.panel.temperature,
           'emissivity': params.wall2.panel.emissivity,
-          'u': params.wall2.panel.xposition, 
+          'u': params.wall2.panel.xposition,
           'v': params.wall2.panel.yposition,
           'width': params.wall2.panel.width,
           'height': params.wall2.panel.height,
@@ -217,7 +223,7 @@ function set_wall_properties(){
           'name': 'wall3panel1',
           'temperature': params.wall3.panel.temperature,
           'emissivity': params.wall3.panel.emissivity,
-          'u': params.wall3.panel.xposition, 
+          'u': params.wall3.panel.xposition,
           'v': params.wall3.panel.yposition,
           'width': params.wall3.panel.width,
           'height': params.wall3.panel.height,
@@ -232,7 +238,7 @@ function set_wall_properties(){
           'name': 'wall4panel1',
           'temperature': params.wall4.panel.temperature,
           'emissivity': params.wall4.panel.emissivity,
-          'u': params.wall4.panel.xposition, 
+          'u': params.wall4.panel.xposition,
           'v': params.wall4.panel.yposition,
           'width': params.wall4.panel.width,
           'height': params.wall4.panel.height,
@@ -247,7 +253,7 @@ function set_wall_properties(){
           'name': 'ceilingpanel1',
           'temperature': params.ceiling.panel.temperature,
           'emissivity': params.ceiling.panel.emissivity,
-          'u': params.ceiling.panel.xposition, 
+          'u': params.ceiling.panel.xposition,
           'v': params.ceiling.panel.yposition,
           'width': params.ceiling.panel.width,
           'height': params.ceiling.panel.height,
@@ -262,7 +268,7 @@ function set_wall_properties(){
           'name': 'floorpanel1',
           'temperature': params.floor.panel.temperature,
           'emissivity': params.floor.panel.emissivity,
-          'u': params.floor.panel.xposition, 
+          'u': params.floor.panel.xposition,
           'v': params.floor.panel.yposition,
           'width': params.floor.panel.width,
           'height': params.floor.panel.height,
@@ -274,7 +280,7 @@ function set_wall_properties(){
 
 function gen_zone_geometry(){
 
-    var wall1 = { 
+    var wall1 = {
         'vertices': [
           {'x': 0, 'y': 0, 'z': 0},
           {'x': mrt.room.width, 'y': 0, 'z': 0},
@@ -342,7 +348,7 @@ function gen_zone_geometry(){
         ],
         'name': 'wall3'
     };
-    
+
     if (params.wall3.panel.active){
       var u0 = params.wall3.panel.xposition;
       var v0 = params.wall3.panel.yposition;
@@ -390,8 +396,8 @@ function gen_zone_geometry(){
     } else {
       wall4.children = [];
     }
-    
-    var ceiling = { 
+
+    var ceiling = {
         'vertices': [
           {'x': 0, 'y': mrt.room.height, 'z': 0},
           {'x': mrt.room.width, 'y': mrt.room.height, 'z': 0},
@@ -420,7 +426,7 @@ function gen_zone_geometry(){
       ceiling.children = [];
     }
 
-    var floor = { 
+    var floor = {
         'vertices': [
           {'x': 0, 'y': 0, 'z': 0},
           {'x': mrt.room.width, 'y': 0, 'z': 0},
@@ -467,11 +473,11 @@ function wallPanelGeometry(vertices){
 }
 
 function wallPanelMesh(geometry){
-  var material = new THREE.MeshPhongMaterial( { 
-      color: 0xffffff, 
-      reflectivity: 100, 
-      transparent: true, 
-      opacity: 1.0 
+  var material = new THREE.MeshPhongMaterial( {
+      color: 0xffffff,
+      reflectivity: 100,
+      transparent: true,
+      opacity: 1.0
   } );
   material.side = THREE.DoubleSide;
   var uva = new THREE.Vector2(0,0);
@@ -546,7 +552,7 @@ function render_zone(){
 
   var Np = z.length;
   var thetax, thetaz
-  for (var i = 0; i < Np; i++){ 
+  for (var i = 0; i < Np; i++){
     var p = z[i];
     var wall = wallPanelGeometry(p.vertices);
 
@@ -561,7 +567,7 @@ function render_zone(){
       } else {
         thetay = Math.acos( n0.z / arg );
       }
-      
+
       arg = Math.pow(n0.y, 2) + Math.pow(n0.z, 2)
       if (arg == 0){
         thetax = 0;
@@ -614,12 +620,12 @@ function render_zone(){
 
     // wall texture
     //var wall_texture = THREE.ImageUtils.loadTexture( 'img/wall1.jpg' );
-    var material = new THREE.MeshPhongMaterial( { 
-        color: 0xffffff, 
-        //map: wall_texture, 
-        //bumpMap: wall_texture, 
-        reflectivity: 100, 
-        transparent: true, 
+    var material = new THREE.MeshPhongMaterial( {
+        color: 0xffffff,
+        //map: wall_texture,
+        //bumpMap: wall_texture,
+        reflectivity: 100,
+        transparent: true,
         opacity: 1.0,
     } );
 
@@ -630,17 +636,17 @@ function render_zone(){
     var uvb = new THREE.Vector2(0,1);
     var uvc = new THREE.Vector2(1,1);
     var uvd = new THREE.Vector2(1,0);
-    
+
     mesh.geometry.faceVertexUvs[0].push([uva, uvb, uvc])
     mesh.geometry.faceVertexUvs[0].push([uva.clone(), uvc, uvd.clone()])
-    
+
     mesh.geometry.computeFaceNormals();
     mesh.geometry.computeVertexNormals();
 
     mesh.name = p.name;
     scene.add(mesh);
     surfaces.push(mesh);
-    
+
     setOpacity(params.opacity);
 
     // edges
@@ -675,11 +681,11 @@ function init() {
   scene.add( arrowHelper );
 
   var textGeo = new THREE.TextGeometry("N", {
-      "size": 1, 
+      "size": 1,
       "height": 0.1
   });
   var textMaterial = new THREE.MeshBasicMaterial({color: 0x000000});
-  var textMesh = new THREE.Mesh(textGeo, textMaterial); 
+  var textMesh = new THREE.Mesh(textGeo, textMaterial);
   textMesh.position = new THREE.Vector3( 0, 0, -5);
   textMesh.rotation.x = -Math.PI / 2;
   textMesh.rotation.z = -Math.PI / 2;
@@ -713,7 +719,7 @@ function init() {
       calculate_all();
     });
 
-  function set_surface_property(surface_name, property, value, panel){         
+  function set_surface_property(surface_name, property, value, panel){
     var surface = _.find(mrt.walls, function(r){ return r.name == surface_name; });
     if (panel){
       surface.subsurfaces[0][property] = value;
@@ -737,12 +743,16 @@ function init() {
 
   var panel_wall1 = f_wall1.addFolder('Panel');
   panel_wall1.add(params.wall1.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
     });
   panel_wall1.add(params.wall1.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_wall1.add(params.wall1.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_wall1.add(params.wall1.panel, 'temperature').min(0).max(100).step(0.1)
@@ -755,10 +765,10 @@ function init() {
   var panel_wall1_xpos = panel_wall1.add(params.wall1.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_wall1_ypos = panel_wall1.add(params.wall1.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall1_width, panel_wall1_height, panel_wall1_xpos, panel_wall1_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.wall1.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -773,12 +783,16 @@ function init() {
 
   var panel_wall2 = f_wall2.addFolder('Panel');
   panel_wall2.add(params.wall2.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
     });
   panel_wall2.add(params.wall2.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_wall2.add(params.wall2.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_wall2.add(params.wall2.panel, 'temperature').min(0).max(100).step(0.1)
@@ -791,10 +805,10 @@ function init() {
   var panel_wall2_xpos = panel_wall2.add(params.wall2.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_wall2_ypos = panel_wall2.add(params.wall2.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall2_width, panel_wall2_height, panel_wall2_xpos, panel_wall2_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.wall2.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -803,31 +817,35 @@ function init() {
 
   var f_wall3 = f_surfaces.addFolder('Wall 3');
   f_wall3.add(params.wall3, 'temperature').min(0).max(100).step(0.1)
-    .onFinishChange(function(){ 
-      set_surface_property('wall3', 'temperature', params.wall3.temperature, false) 
+    .onFinishChange(function(){
+      set_surface_property('wall3', 'temperature', params.wall3.temperature, false)
   });
   f_wall3.add(params.wall3, 'emissivity').min(0).max(1).step(0.01)
-    .onFinishChange(function(){ 
-      set_surface_property('wall3', 'emissivity', params.wall3.emissivity, false) 
+    .onFinishChange(function(){
+      set_surface_property('wall3', 'emissivity', params.wall3.emissivity, false)
   });
 
   var panel_wall3 = f_wall3.addFolder('Panel');
   panel_wall3.add(params.wall3.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
   });
   panel_wall3.add(params.wall3.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_wall3.add(params.wall3.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_wall3.add(params.wall3.panel, 'temperature').min(0).max(100).step(0.1)
-    .onFinishChange(function(){ 
-      set_surface_property('wall3', 'temperature', params.wall3.panel.temperature, true) 
+    .onFinishChange(function(){
+      set_surface_property('wall3', 'temperature', params.wall3.panel.temperature, true)
   });
   panel_wall3.add(params.wall3.panel, 'emissivity').min(0).max(1).step(0.01)
-    .onFinishChange(function(){ 
-      set_surface_property('wall3', 'emissivity', params.wall3.panel.emissivity, true) 
+    .onFinishChange(function(){
+      set_surface_property('wall3', 'emissivity', params.wall3.panel.emissivity, true)
   });
 
   var panel_wall3_width = panel_wall3.add(params.wall3.panel, 'width').min(0.1).max(mrt.room.width).step(0.01)
@@ -835,10 +853,10 @@ function init() {
   var panel_wall3_xpos = panel_wall3.add(params.wall3.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_wall3_ypos = panel_wall3.add(params.wall3.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall3_width, panel_wall3_height, panel_wall3_xpos, panel_wall3_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.wall3.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -853,12 +871,16 @@ function init() {
 
   var panel_wall4 = f_wall4.addFolder('Panel');
   panel_wall4.add(params.wall4.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
   });
   panel_wall4.add(params.wall4.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_wall4.add(params.wall4.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_wall4.add(params.wall4.panel, 'temperature').min(0).max(100).step(0.1)
@@ -871,10 +893,10 @@ function init() {
   var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
   var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
   _.each([panel_wall4_width, panel_wall4_height, panel_wall4_xpos, panel_wall4_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.wall4.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -889,12 +911,16 @@ function init() {
 
   var panel_ceiling = f_ceiling.addFolder('Panel');
   panel_ceiling.add(params.ceiling.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
   });
   panel_ceiling.add(params.ceiling.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_ceiling.add(params.ceiling.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_ceiling.add(params.ceiling.panel, 'temperature').min(0).max(100).step(0.1)
@@ -907,10 +933,10 @@ function init() {
   var panel_ceiling_xpos = panel_ceiling.add(params.ceiling.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_ceiling_ypos = panel_ceiling.add(params.ceiling.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
     _.each([panel_ceiling_width, panel_ceiling_height, panel_ceiling_xpos, panel_ceiling_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.ceiling.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -925,12 +951,16 @@ function init() {
 
   var panel_floor = f_floor.addFolder('Panel');
   panel_floor.add(params.floor.panel, 'active')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
       view_factors_need_updating = true;
-      calculate_all(); 
+      calculate_all();
   });
   panel_floor.add(params.floor.panel, 'window')
-    .onFinishChange(function(){ 
+    .onFinishChange(function(){
+      do_fast_stuff();
+    });
+  panel_floor.add(params.floor.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){
       do_fast_stuff();
     });
   panel_floor.add(params.floor.panel, 'temperature').min(0).max(100).step(0.1)
@@ -943,10 +973,10 @@ function init() {
   var panel_floor_xpos = panel_floor.add(params.floor.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
   var panel_floor_ypos = panel_floor.add(params.floor.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
   _.each([panel_floor_width, panel_floor_height, panel_floor_xpos, panel_floor_ypos], function(g){
-    g.onFinishChange(function(){ 
+    g.onFinishChange(function(){
       if (params.floor.panel.active){
         view_factors_need_updating = true;
-        calculate_all(); 
+        calculate_all();
       }
     });
   });
@@ -972,11 +1002,11 @@ function init() {
 
   gui.add(params, 'display', [
           'MRT',
-          'Longwave MRT', 
+          'Longwave MRT',
           'Shortwave dMRT',
-          'Direct shortwave dMRT', 
-          'Diffuse shortwave dMRT', 
-          'Reflected shortwave dMRT', 
+          'Direct shortwave dMRT',
+          'Diffuse shortwave dMRT',
+          'Reflected shortwave dMRT',
           'PMV'
   ]).onFinishChange(function(){ do_fast_stuff(); });
 
@@ -989,13 +1019,12 @@ function init() {
 
   gui.add(params, 'update view factors');
 
-  // SolarCal 
+  // SolarCal
 
   solarcal = {
-      'alt': 45, 
-      'az': 0, 
-      'fbes': 0.5, 
-      'tsol': 0.8, 
+      'alt': 45,
+      'az': 0,
+      'fbes': 0.5,
       'Idir': 700,
       'asa': 0.7,
   }
@@ -1006,15 +1035,13 @@ function init() {
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'tsol').min(0).max(1).step(0.01)
-    .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
 
   // Comfort
-  
+
   comfort = {
       'ta': 25,
       'vel': 0.15,
@@ -1081,10 +1108,10 @@ function init() {
   controls = new THREE.OrbitControls(camera, renderer.domElement);
 
   container.appendChild( renderer.domElement );
-  
+
   window.addEventListener( 'resize', onWindowResize, false );
   document.addEventListener( 'mousemove', onDocumentMouseMove, false );
-  
+
   function onWindowResize(){
     camera.setSize( window.innerWidth, window.innerHeight );
     camera.updateProjectionMatrix();
@@ -1100,7 +1127,7 @@ function init() {
 function calculate_all(_update_view_factors){
 
   update_zone();
-  setTimeout(function(){ 
+  setTimeout(function(){
     if (_update_view_factors) {
       update_view_factors();
       document.getElementById('calculating').style.display = "none";
@@ -1195,7 +1222,7 @@ function render() {
     if (window_objects) {
       var window_object_vfs = _.map(window_objects, function(w) {
         return _.find(point_view_factors, function(o){
-          return o.name == w.name; 
+          return o.name == w.name;
         }).view_factor;
       });
       var my_erf = calculate_erf_point(my_point,
@@ -1203,7 +1230,7 @@ function render() {
     } else {
       my_erf = {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
     }
-      
+
     if (params.display === "Longwave MRT") {
       display_value = longwave_mrt;
     } else if (params.display === "MRT"){
@@ -1218,13 +1245,13 @@ function render() {
       display_value = my_erf.dMRT_refl;
     } else if (params.display === "PMV") {
       var mrt_total = longwave_mrt + my_erf.dMRT;
-      var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_total, 
+      var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_total,
         comfort.vel, comfort.rh, comfort.met, comfort.clo, 0);
       display_value = my_pmv.pmv;
     }
-    document.getElementById('occupant-position').innerHTML = "Occupant (x, y): (" 
+    document.getElementById('occupant-position').innerHTML = "Occupant (x, y): ("
       + intersects[0].point.x.toFixed(1) + ", " + intersects[0].point.z.toFixed(1) + ")";
-    document.getElementById('cursor-temperature').innerHTML = params.display + ": " 
+    document.getElementById('cursor-temperature').innerHTML = params.display + ": "
       + display_value.toFixed(1);
   } else {
     document.getElementById('cursor-temperature').innerHTML = "";
@@ -1239,7 +1266,7 @@ function render() {
 
 function update_view_factors(){
 
-  view_factors = _.map(plane.geometry.vertices, function(v){ 
+  view_factors = _.map(plane.geometry.vertices, function(v){
     var my_vector = new THREE.Vector3();
     my_vector.copy(v);
     my_vector.applyMatrix4( plane.matrixWorld );
@@ -1258,14 +1285,14 @@ function update_view_factors(){
   });
   view_factors_need_updating = false;
 
-} 
+}
 
 function update_shortwave_components() {
 
   var window_objects = get_window_objects();
   var window_object_vfs = get_window_object_vfs(solarcal.window_objects);
 
-  var r = 1.3 * _.max(mrt.room); 
+  var r = 1.3 * _.max(mrt.room);
 
   var floor = _.find(scene.children, function(c){
     return c.name == 'floor';
@@ -1287,14 +1314,14 @@ function update_shortwave_components() {
   if (window_objects) {
     ERF_vertex_values = _.map(plane.geometry.vertices, function(v, i){
       window_object_vfs = get_window_object_vfs(window_objects, i);
-      return calculate_erf_point(v, 
-                                 solarcal.skydome_center, 
-                                 window_objects, 
+      return calculate_erf_point(v,
+                                 solarcal.skydome_center,
+                                 window_objects,
                                  window_object_vfs);
     });
   } else {
     // if no window object, all components are zero
-    ERF_vertex_values = _.map(plane.geometry.vertices, function(){ 
+    ERF_vertex_values = _.map(plane.geometry.vertices, function(){
       return {'dMRT_direct': 0, 'dMRT_diff': 0, 'dMRT_refl': 0, 'dMRT': 0, 'ERF': 0};
     });
   }
@@ -1320,8 +1347,9 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
   sun_position.normalize();
 
   raycaster.set(my_vector, sun_position);
-  
+
   var tsol_factor = 0;
+  var tsol = 0;
   for (var i = 0; i < window_objects.length; i++) {
     var window_object = window_objects[i];
     var intersects = raycaster.intersectObject( window_object );
@@ -1335,11 +1363,14 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
       var dot = v_normal.dot(relative_sun_position);
       var th = (180 * Math.acos(dot) / Math.PI);
       if (th > 90) th = 180 - th;
-  
+
+      var window_object_parent = window_object.name.replace("panel1","");
+      var tsol = params[window_object_parent].panel.tsol;
+
       // this equation is a fit of an empirical model of
       // clear glass transmittance as a function of angle
       // of incidence, from ASHRAE Handbook 1985 27.14.
-      var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3) 
+      var tsol_factor = -7e-8 * Math.pow(th, 4) + 7e-6 * Math.pow(th, 3)
         - 0.0002 * Math.pow(th, 2) + 0.0016 * th + 0.997
       //scene.add(new THREE.ArrowHelper( sun_position, my_vector, 10, 0x00ff00))
 
@@ -1350,8 +1381,8 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
   var svvf = _.reduce(window_object_vfs, function(memo, num){ return memo + num; }, 0);
   var sharp = solarcal.az - mrt.occupant.azimuth;
   if (sharp < 0) sharp += 360;
-  var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture, 
-    solarcal.Idir, solarcal.tsol, svvf, 
+  var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture,
+    solarcal.Idir, tsol, svvf,
     solarcal.fbes, solarcal.asa, tsol_factor)
   return my_erf;
 }
@@ -1365,13 +1396,13 @@ function update_visualization(){
     document.getElementById("scale-maximum").innerHTML = "-";
     document.getElementById('scale-minimum').innerHTML = "-";
   } else {
-    var vertex_values; 
+    var vertex_values;
     if (params.display == 'MRT') {
       vertex_values = _.map(view_factors, function(vfs, i){
         return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
       });
     } else if (params.display == 'Longwave MRT'){
-      vertex_values = _.map(view_factors, function(vfs){ 
+      vertex_values = _.map(view_factors, function(vfs){
         return mrt.calc(vfs);
       });
     } else if (params.display == 'Shortwave dMRT') {
@@ -1395,13 +1426,13 @@ function update_visualization(){
         return mrt.calc(vfs) + ERF_vertex_values[i].dMRT;
       });
       vertex_values = _.map(mrt_values, function(mrt_val) {
-        var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_val, 
+        var my_pmv = comf.pmvElevatedAirspeed(comfort.ta, mrt_val,
           comfort.vel, comfort.rh, comfort.met, comfort.clo, 0);
         return my_pmv.pmv;
       });
-      
+
     }
-  
+
     if (params.autoscale) {
       scale_min = _.min(vertex_values);
       scale_max = _.max(vertex_values);
@@ -1409,7 +1440,7 @@ function update_visualization(){
       scale_min = params.scaleMin;
       scale_max = params.scaleMax;
     }
-  
+
     document.getElementById("scale-maximum").innerHTML = scale_max.toFixed(1);
     document.getElementById("scale-minimum").innerHTML = scale_min.toFixed(1);
     var vertex_colors = _.map(vertex_values, function(v){
@@ -1421,8 +1452,8 @@ function update_visualization(){
         return new THREE.Color(r, 0, 1 - r);
       }
     });
-  } 
-  
+  }
+
   var faceIndices = [ 'a', 'b', 'c'];
   for (var i = 0; i < plane.geometry.faces.length; i++){
     var f = plane.geometry.faces[i];
