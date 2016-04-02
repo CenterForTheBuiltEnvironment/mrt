@@ -24,6 +24,7 @@ params = {
       'panel': {
         'active': false,
         'window': true,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 8.0,
@@ -38,6 +39,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 36.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -52,6 +54,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 38.0,
         'emissivity': 0.9,
         'width': 8.0,
@@ -66,6 +69,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -80,6 +84,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 50.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -94,6 +99,7 @@ params = {
       'panel': {
         'active': false,
         'window': false,
+        'tsol': 0.8,
         'temperature': 40.0,
         'emissivity': 0.9,
         'width': 3.0,
@@ -745,6 +751,10 @@ function init() {
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
+  panel_wall1.add(params.wall1.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
   panel_wall1.add(params.wall1.panel, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall1', 'temperature', params.wall1.panel.temperature, true) });
   panel_wall1.add(params.wall1.panel, 'emissivity').min(0).max(1).step(0.01)
@@ -778,6 +788,10 @@ function init() {
       calculate_all(); 
     });
   panel_wall2.add(params.wall2.panel, 'window')
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
+  panel_wall2.add(params.wall2.panel, 'tsol').min(0).max(1).step(0.01)
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
@@ -821,6 +835,10 @@ function init() {
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
+  panel_wall3.add(params.wall3.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
   panel_wall3.add(params.wall3.panel, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ 
       set_surface_property('wall3', 'temperature', params.wall3.panel.temperature, true) 
@@ -861,6 +879,10 @@ function init() {
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
+  panel_wall4.add(params.wall4.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
   panel_wall4.add(params.wall4.panel, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall4', 'temperature', params.wall4.panel.temperature, true) });
   panel_wall4.add(params.wall4.panel, 'emissivity').min(0).max(1).step(0.01)
@@ -897,6 +919,10 @@ function init() {
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
+  panel_ceiling.add(params.ceiling.panel, 'tsol').min(0).max(1).step(0.01)
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
   panel_ceiling.add(params.ceiling.panel, 'temperature').min(0).max(100).step(0.1)
     .onFinishChange(function(){ set_surface_property('ceiling', 'temperature', params.ceiling.panel.temperature, true) });
   panel_ceiling.add(params.ceiling.panel, 'emissivity').min(0).max(1).step(0.01)
@@ -930,6 +956,10 @@ function init() {
       calculate_all(); 
   });
   panel_floor.add(params.floor.panel, 'window')
+    .onFinishChange(function(){ 
+      do_fast_stuff();
+    });
+  panel_floor.add(params.floor.panel, 'tsol').min(0).max(1).step(0.01)
     .onFinishChange(function(){ 
       do_fast_stuff();
     });
@@ -995,7 +1025,6 @@ function init() {
       'alt': 45, 
       'az': 0, 
       'fbes': 0.5, 
-      'tsol': 0.8, 
       'Idir': 700,
       'asa': 0.7,
   }
@@ -1005,8 +1034,6 @@ function init() {
   solarcal_f.add(solarcal, 'az').min(0).max(360).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01)
-    .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'tsol').min(0).max(1).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
   solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
@@ -1322,6 +1349,7 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
   raycaster.set(my_vector, sun_position);
   
   var tsol_factor = 0;
+  var tsol = 0;
   for (var i = 0; i < window_objects.length; i++) {
     var window_object = window_objects[i];
     var intersects = raycaster.intersectObject( window_object );
@@ -1335,6 +1363,9 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
       var dot = v_normal.dot(relative_sun_position);
       var th = (180 * Math.acos(dot) / Math.PI);
       if (th > 90) th = 180 - th;
+
+      var window_object_parent = window_object.name.replace("panel1","");
+      var tsol = params[window_object_parent].panel.tsol;
   
       // this equation is a fit of an empirical model of
       // clear glass transmittance as a function of angle
@@ -1351,7 +1382,7 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
   var sharp = solarcal.az - mrt.occupant.azimuth;
   if (sharp < 0) sharp += 360;
   var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture, 
-    solarcal.Idir, solarcal.tsol, svvf, 
+    solarcal.Idir, tsol, svvf, 
     solarcal.fbes, solarcal.asa, tsol_factor)
   return my_erf;
 }
