@@ -22,11 +22,15 @@ Surfaces
 --------
 This menu contains all of the parameters for each of the walls, floor and ceiling. Each menu contains a *temperature* (C), *emissivity*, and a menu for a subsurface.
 
-A subsurface is any surface contained in the wall, including a window, skylight, radiant panel, or otherwise. Its parameters are *temperature* (C), *emissivity*, **width** (m), **height** (m), **xposition** (m), **yposition** (m), and **active**.
+A subsurface is any surface contained in the wall, including a window, skylight, radiant panel, or otherwise. Its parameters are *temperature* (C), *emissivity*, **width** (m), **height** (m), **xposition** (m), **yposition** (m), **active**, **window**, and *tsol*.
 
 The **xposition** and **yposition** parameters are the coordinates of the lower-left corner of the subsurface. If the subsurface is a window, **yposition** could also be thought of as the sill height.
 
 When **active** is selected, the subsurface will be added to the room. Note that the subsurface geometry parameters require view factors to be updated, but only when the subsurface is active.
+
+When **window** is selected, shortwave solar radiation can be admitted to the space, and SolarCal parameters will apply.
+
+If **window** is active, the *tsol* parameter will also apply. This is the solar transmittance of the window being modeled. If **window** is not selected, *tsol* can be ignored.
 
 Occupant
 --------
@@ -40,9 +44,10 @@ For modeling the effects of shortwave radiation, use the SolarCal section and su
 - *alt* (degrees from horizontal): solar altitude.
 - *az* (degrees clockwise from north): solar azimuth.
 - *fbes*: fraction of body exposed to sun.
-- *tsol*: window solar transmittance.
 - *asa*: average shortwave absorptivity.
 - *Rfloor*: floor reflectivity.
+
+SolarCal also requires Tsol, the solar transmittance of the window through which radiation is being admitted. This is a property of each window surface.
 
 Thermal Comfort
 ---------------
