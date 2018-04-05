@@ -1379,7 +1379,7 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
   }
 
   var svvf = _.reduce(window_object_vfs, function(memo, num){ return memo + num; }, 0);
-  var sharp = solarcal.az - mrt.occupant.azimuth;
+  var sharp = solarcal.az - (180 * mrt.occupant.azimuth / Math.PI);
   if (sharp < 0) sharp += 360;
   var my_erf = ERF(solarcal.alt, sharp, mrt.occupant.posture,
     solarcal.Idir, tsol, svvf,
