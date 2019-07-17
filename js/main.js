@@ -176,8 +176,8 @@ function set_wall_properties(){
       },
       {
           'name': 'floor',
-          'temperature': params.ceiling.temperature,
-          'emissivity': params.ceiling.emissivity,
+          'temperature': params.floor.temperature,
+          'emissivity': params.floor.emissivity,
           'plane': 'xy',
           'u': mrt.room.width,
           'v': mrt.room.depth,
@@ -1134,7 +1134,6 @@ function calculate_all(_update_view_factors){
     }
     do_fast_stuff();
   }, 1);
-
 }
 
 function update_zone(){
