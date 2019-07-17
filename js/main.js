@@ -751,7 +751,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall1.add(params.wall1.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_wall1.add(params.wall1.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
@@ -791,7 +791,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall2.add(params.wall2.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_wall2.add(params.wall2.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
@@ -835,7 +835,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall3.add(params.wall3.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_wall3.add(params.wall3.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
@@ -879,7 +879,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall4.add(params.wall4.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_wall4.add(params.wall4.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
@@ -919,7 +919,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_ceiling.add(params.ceiling.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_ceiling.add(params.ceiling.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
@@ -959,7 +959,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_floor.add(params.floor.panel, 'tsol').min(0).max(1).step(0.01)
+  panel_floor.add(params.floor.panel, 'tsol').min(0).max(1).step(0.001)
     .onFinishChange(function(){
       do_fast_stuff();
     });
