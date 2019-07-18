@@ -1000,25 +1000,6 @@ function init() {
 
   // Etc ... /////////////////////
 
-  gui.add(params, 'display', [
-          'MRT',
-          'Longwave MRT',
-          'Shortwave dMRT',
-          'Direct shortwave dMRT',
-          'Diffuse shortwave dMRT',
-          'Reflected shortwave dMRT',
-          'PMV'
-  ]).onFinishChange(function(){ do_fast_stuff(); });
-
-  gui.add(params, 'autoscale')
-    .onFinishChange(function(){ do_fast_stuff(); });
-  gui.add(params, 'scaleMax').min(0).max(100).step(1)
-    .onFinishChange(function(){ do_fast_stuff(); });
-  gui.add(params, 'scaleMin').min(0).max(100).step(1)
-    .onFinishChange(function(){ do_fast_stuff(); });
-
-  gui.add(params, 'update view factors');
-
   // SolarCal
 
   solarcal = {
@@ -1060,6 +1041,25 @@ function init() {
     .onFinishChange(function(){ do_fast_stuff(); });
   f_comfort.add(comfort, 'clo').min(0).max(4).step(0.01)
     .onFinishChange(function(){ do_fast_stuff(); });
+
+  gui.add(params, 'display', [
+          'MRT',
+          'Longwave MRT',
+          'Shortwave dMRT',
+          'Direct shortwave dMRT',
+          'Diffuse shortwave dMRT',
+          'Reflected shortwave dMRT',
+          'PMV'
+  ]).onFinishChange(function(){ do_fast_stuff(); });
+
+  gui.add(params, 'autoscale')
+    .onFinishChange(function(){ do_fast_stuff(); });
+  gui.add(params, 'scaleMax').min(0).max(100).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+  gui.add(params, 'scaleMin').min(0).max(100).step(1)
+    .onFinishChange(function(){ do_fast_stuff(); });
+
+  gui.add(params, 'update view factors');
 
   function set_panel_guis(){
     panel_wall1_width.max(mrt.room.width);
