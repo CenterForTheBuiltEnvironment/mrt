@@ -112,7 +112,8 @@ params = {
     'autoscale': true,
     'scaleMin': 20.0,
     'scaleMax': 40.0,
-    'update view factors': function(){
+    'setGlobalSurfaceTemp': 90,    
+    'update': function(){
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
         calculate_all(true);
@@ -1057,7 +1058,10 @@ function init() {
   gui.add(params, 'scaleMin').min(0).max(100).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
 
-  gui.add(params, 'update view factors');
+  gui.add(params, 'setGlobalSurfaceTemp').min(0).max(100).step(1)
+    .onFinishChange(function(){ link_temps(); });  
+
+  gui.add(params, 'update');
 
   function set_panel_guis(){
     panel_wall1_width.max(mrt.room.width);
@@ -1090,7 +1094,31 @@ function init() {
     panel_floor_xpos.max(mrt.room.width);
     panel_floor_ypos.max(mrt.room.depth);
   };
-
+  
+  function link_temps(){
+    params.wall1.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('wall1', 'temperature', params.wall1.temperature, false);
+    //params.wall1.panel.temperature = params.setGlobalSurfaceTemp;
+    //set_surface_property('panel_wall1', 'temperature', params.wall1.panel.temperature, true);
+    params.wall2.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('wall2', 'temperature', params.wall2.temperature, false);
+    params.wall3.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('wall3', 'temperature', params.wall3.temperature, false);
+    params.wall4.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('wall4', 'temperature', params.wall4.temperature, false);
+    params.ceiling.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('ceiling', 'temperature', params.ceiling.temperature, false);
+    params.floor.temperature = params.setGlobalSurfaceTemp;
+    set_surface_property('floor', 'temperature', params.floor.temperature, false);
+     
+    //update gui displays to match values stored in fields
+    _.each([f_wall1, f_wall2, f_wall3, f_wall4, f_floor, f_ceiling], function(g){
+        g.updateDisplay();
+    });
+    
+    do_fast_stuff();       
+  };
+  
   // Lights
   var ambientLight = new THREE.AmbientLight( 0x999999 );
   scene.add( ambientLight );
