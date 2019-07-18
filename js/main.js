@@ -121,6 +121,7 @@ params = {
 };
 
 var view_factors;
+var panelBorderMin = 0.1 // minimum distance from panel edge to surface edge
 
 function set_wall_properties(){
   mrt.walls = [
@@ -292,11 +293,8 @@ function gen_zone_geometry(){
     if (params.wall1.panel.active){
       var u0 = params.wall1.panel.xposition;
       var v0 = params.wall1.panel.yposition;
-      var w = params.wall1.panel.width;
-      var h = params.wall1.panel.height;
-
-      // make sure the panel fits!
-
+      var w = Math.min(params.wall1.panel.width, mrt.room.width - (u0 + panelBorderMin));
+      var h = Math.min(params.wall1.panel.height, mrt.room.height - (v0 + panelBorderMin));
       wall1.children = [
         { 'vertices': [{'x': u0, 'y': v0, 'z': 0 },
                        {'x': u0, 'y': v0 + h, 'z': 0 },
@@ -323,8 +321,8 @@ function gen_zone_geometry(){
     if (params.wall2.panel.active){
       var u0 = params.wall2.panel.xposition;
       var v0 = params.wall2.panel.yposition;
-      var w = params.wall2.panel.width;
-      var h = params.wall2.panel.height;
+      var w = Math.min(params.wall2.panel.width, mrt.room.depth - (u0 + panelBorderMin));
+      var h = Math.min(params.wall2.panel.height, mrt.room.height - (v0 + panelBorderMin));
       wall2.children = [
         { 'vertices': [{'x': mrt.room.width, 'y': v0, 'z': u0 },
                        {'x': mrt.room.width, 'y': v0 + h, 'z': u0 },
@@ -352,8 +350,8 @@ function gen_zone_geometry(){
     if (params.wall3.panel.active){
       var u0 = params.wall3.panel.xposition;
       var v0 = params.wall3.panel.yposition;
-      var w = params.wall3.panel.width;
-      var h = params.wall3.panel.height;
+      var w = Math.min(params.wall3.panel.width, mrt.room.width - (u0 + panelBorderMin));
+      var h = Math.min(params.wall3.panel.height, mrt.room.height - (v0 + panelBorderMin));
       wall3.children = [
         { 'vertices': [{'x': u0, 'y': v0, 'z': mrt.room.depth },
                        {'x': u0, 'y': v0 + h, 'z': mrt.room.depth },
@@ -381,8 +379,8 @@ function gen_zone_geometry(){
     if (params.wall4.panel.active){
       var u0 = params.wall4.panel.xposition;
       var v0 = params.wall4.panel.yposition;
-      var w = params.wall4.panel.width;
-      var h = params.wall4.panel.height;
+      var w = Math.min(params.wall4.panel.width, mrt.room.depth - (u0 + panelBorderMin));
+      var h = Math.min(params.wall4.panel.height, mrt.room.height - (v0 + panelBorderMin));
       wall4.children = [
         { 'vertices': [{'x': 0, 'y': v0, 'z': u0 },
                        {'x': 0, 'y': v0 + h, 'z': u0 },
@@ -410,8 +408,8 @@ function gen_zone_geometry(){
     if (params.ceiling.panel.active){
       var u0 = params.ceiling.panel.xposition;
       var v0 = params.ceiling.panel.yposition;
-      var w = params.ceiling.panel.width;
-      var h = params.ceiling.panel.height;
+      var w = Math.min(params.ceiling.panel.width, mrt.room.width - (u0 + panelBorderMin));
+      var h = Math.min(params.ceiling.panel.height, mrt.room.depth - (v0 + panelBorderMin));
       ceiling.children = [
         { 'vertices': [{'x': u0, 'y': mrt.room.height, 'z': v0 },
                        {'x': u0 + w, 'y': mrt.room.height, 'z': v0 },
@@ -439,8 +437,8 @@ function gen_zone_geometry(){
     if (params.floor.panel.active){
       var u0 = params.floor.panel.xposition;
       var v0 = params.floor.panel.yposition;
-      var w = params.floor.panel.width;
-      var h = params.floor.panel.height;
+      var w = Math.min(params.floor.panel.width, mrt.room.width - (u0 + panelBorderMin));
+      var h = Math.min(params.floor.panel.height, mrt.room.depth - (v0 + panelBorderMin));
       floor.children = [
         { 'vertices': [{'x': u0, 'y': 0, 'z': v0 },
                        {'x': u0 + w, 'y': 0, 'z': v0 },
@@ -760,10 +758,10 @@ function init() {
   panel_wall1.add(params.wall1.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall1', 'emissivity', params.wall1.panel.emissivity, true) });
 
-  var panel_wall1_width = panel_wall1.add(params.wall1.panel, 'width').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_wall1_height = panel_wall1.add(params.wall1.panel, 'height').min(0.1).max(mrt.room.height).step(0.01)
-  var panel_wall1_xpos = panel_wall1.add(params.wall1.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_wall1_ypos = panel_wall1.add(params.wall1.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
+  var panel_wall1_width = panel_wall1.add(params.wall1.panel, 'width').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_wall1_height = panel_wall1.add(params.wall1.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
+  var panel_wall1_xpos = panel_wall1.add(params.wall1.panel, 'xposition').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_wall1_ypos = panel_wall1.add(params.wall1.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
   _.each([panel_wall1_width, panel_wall1_height, panel_wall1_xpos, panel_wall1_ypos], function(g){
     g.onFinishChange(function(){
       if (params.wall1.panel.active){
@@ -800,10 +798,10 @@ function init() {
   panel_wall2.add(params.wall2.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall2', 'emissivity', params.wall2.panel.emissivity, true) });
 
-  var panel_wall2_width = panel_wall2.add(params.wall2.panel, 'width').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_wall2_height = panel_wall2.add(params.wall2.panel, 'height').min(0.1).max(mrt.room.height).step(0.01)
-  var panel_wall2_xpos = panel_wall2.add(params.wall2.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_wall2_ypos = panel_wall2.add(params.wall2.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
+  var panel_wall2_width = panel_wall2.add(params.wall2.panel, 'width').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_wall2_height = panel_wall2.add(params.wall2.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
+  var panel_wall2_xpos = panel_wall2.add(params.wall2.panel, 'xposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_wall2_ypos = panel_wall2.add(params.wall2.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
   _.each([panel_wall2_width, panel_wall2_height, panel_wall2_xpos, panel_wall2_ypos], function(g){
     g.onFinishChange(function(){
       if (params.wall2.panel.active){
@@ -848,10 +846,10 @@ function init() {
       set_surface_property('wall3', 'emissivity', params.wall3.panel.emissivity, true)
   });
 
-  var panel_wall3_width = panel_wall3.add(params.wall3.panel, 'width').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_wall3_height = panel_wall3.add(params.wall3.panel, 'height').min(0.1).max(mrt.room.height).step(0.01)
-  var panel_wall3_xpos = panel_wall3.add(params.wall3.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_wall3_ypos = panel_wall3.add(params.wall3.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
+  var panel_wall3_width = panel_wall3.add(params.wall3.panel, 'width').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_wall3_height = panel_wall3.add(params.wall3.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
+  var panel_wall3_xpos = panel_wall3.add(params.wall3.panel, 'xposition').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_wall3_ypos = panel_wall3.add(params.wall3.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
   _.each([panel_wall3_width, panel_wall3_height, panel_wall3_xpos, panel_wall3_ypos], function(g){
     g.onFinishChange(function(){
       if (params.wall3.panel.active){
@@ -888,10 +886,10 @@ function init() {
   panel_wall4.add(params.wall4.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall4', 'emissivity', params.wall4.panel.emissivity, true) });
 
-  var panel_wall4_width = panel_wall4.add(params.wall4.panel, 'width').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_wall4_height = panel_wall4.add(params.wall4.panel, 'height').min(0.1).max(mrt.room.height).step(0.01)
-  var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height).step(0.01)
+  var panel_wall4_width = panel_wall4.add(params.wall4.panel, 'width').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_wall4_height = panel_wall4.add(params.wall4.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
+  var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
   _.each([panel_wall4_width, panel_wall4_height, panel_wall4_xpos, panel_wall4_ypos], function(g){
     g.onFinishChange(function(){
       if (params.wall4.panel.active){
@@ -928,10 +926,10 @@ function init() {
   panel_ceiling.add(params.ceiling.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('ceiling', 'emissivity', params.ceiling.panel.emissivity, true) });
 
-  var panel_ceiling_width = panel_ceiling.add(params.ceiling.panel, 'width').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_ceiling_height = panel_ceiling.add(params.ceiling.panel, 'height').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_ceiling_xpos = panel_ceiling.add(params.ceiling.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_ceiling_ypos = panel_ceiling.add(params.ceiling.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
+  var panel_ceiling_width = panel_ceiling.add(params.ceiling.panel, 'width').min(0.1).max(mrt.room.width - 2*panelBorderMin).step(0.01)
+  var panel_ceiling_height = panel_ceiling.add(params.ceiling.panel, 'height').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_ceiling_xpos = panel_ceiling.add(params.ceiling.panel, 'xposition').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_ceiling_ypos = panel_ceiling.add(params.ceiling.panel, 'yposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
     _.each([panel_ceiling_width, panel_ceiling_height, panel_ceiling_xpos, panel_ceiling_ypos], function(g){
     g.onFinishChange(function(){
       if (params.ceiling.panel.active){
@@ -968,10 +966,10 @@ function init() {
   panel_floor.add(params.floor.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('floor', 'emissivity', params.floor.panel.emissivity, true) });
 
-  var panel_floor_width = panel_floor.add(params.floor.panel, 'width').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_floor_height = panel_floor.add(params.floor.panel, 'height').min(0.1).max(mrt.room.depth).step(0.01)
-  var panel_floor_xpos = panel_floor.add(params.floor.panel, 'xposition').min(0.1).max(mrt.room.width).step(0.01)
-  var panel_floor_ypos = panel_floor.add(params.floor.panel, 'yposition').min(0.1).max(mrt.room.depth).step(0.01)
+  var panel_floor_width = panel_floor.add(params.floor.panel, 'width').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_floor_height = panel_floor.add(params.floor.panel, 'height').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
+  var panel_floor_xpos = panel_floor.add(params.floor.panel, 'xposition').min(0.1).max(mrt.room.width - 2 * panelBorderMin).step(0.01)
+  var panel_floor_ypos = panel_floor.add(params.floor.panel, 'yposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
   _.each([panel_floor_width, panel_floor_height, panel_floor_xpos, panel_floor_ypos], function(g){
     g.onFinishChange(function(){
       if (params.floor.panel.active){
