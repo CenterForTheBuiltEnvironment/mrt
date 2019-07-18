@@ -112,7 +112,7 @@ params = {
     'autoscale': true,
     'scaleMin': 20.0,
     'scaleMax': 40.0,
-    'setGlobalSurfaceTemp': 90,    
+    'setGlobalSurfaceTemp': 21,    
     'update': function(){
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
@@ -123,6 +123,8 @@ params = {
 
 var view_factors;
 var panelBorderMin = 0.1 // minimum distance from panel edge to surface edge
+var tempMax = 300; // highest temperature you can enter in the model
+var tempMin = -30; // lowest temperature you can enter in the model
 
 function set_wall_properties(){
   mrt.walls = [
@@ -735,7 +737,7 @@ function init() {
   // Wall 1 gui /////////////////////
 
   var f_wall1 = f_surfaces.addFolder('Wall 1');
-  f_wall1.add(params.wall1, 'temperature').min(0).max(100).step(0.1)
+  f_wall1.add(params.wall1, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall1', 'temperature', params.wall1.temperature, false) });
   f_wall1.add(params.wall1, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall1', 'emissivity', params.wall1.emissivity, false) });
@@ -754,7 +756,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall1.add(params.wall1.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_wall1.add(params.wall1.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall1', 'temperature', params.wall1.panel.temperature, true) });
   panel_wall1.add(params.wall1.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall1', 'emissivity', params.wall1.panel.emissivity, true) });
@@ -775,7 +777,7 @@ function init() {
   // Wall 2 gui /////////////////////
 
   var f_wall2 = f_surfaces.addFolder('Wall 2');
-  f_wall2.add(params.wall2, 'temperature').min(0).max(100).step(0.1)
+  f_wall2.add(params.wall2, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall2', 'temperature', params.wall2.temperature, false) });
   f_wall2.add(params.wall2, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall2', 'emissivity', params.wall2.emissivity, false) });
@@ -794,7 +796,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall2.add(params.wall2.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_wall2.add(params.wall2.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall2', 'temperature', params.wall2.panel.temperature, true) });
   panel_wall2.add(params.wall2.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall2', 'emissivity', params.wall2.panel.emissivity, true) });
@@ -815,7 +817,7 @@ function init() {
   // Wall 3 gui /////////////////////
 
   var f_wall3 = f_surfaces.addFolder('Wall 3');
-  f_wall3.add(params.wall3, 'temperature').min(0).max(100).step(0.1)
+  f_wall3.add(params.wall3, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){
       set_surface_property('wall3', 'temperature', params.wall3.temperature, false)
   });
@@ -838,7 +840,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall3.add(params.wall3.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_wall3.add(params.wall3.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){
       set_surface_property('wall3', 'temperature', params.wall3.panel.temperature, true)
   });
@@ -863,7 +865,7 @@ function init() {
   // Wall 4 gui /////////////////////
 
   var f_wall4 = f_surfaces.addFolder('Wall 4');
-  f_wall4.add(params.wall4, 'temperature').min(0).max(100).step(0.1)
+  f_wall4.add(params.wall4, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall4', 'temperature', params.wall4.temperature, false) });
   f_wall4.add(params.wall4, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall4', 'emissivity', params.wall4.emissivity, false) });
@@ -882,7 +884,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_wall4.add(params.wall4.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_wall4.add(params.wall4.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall4', 'temperature', params.wall4.panel.temperature, true) });
   panel_wall4.add(params.wall4.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall4', 'emissivity', params.wall4.panel.emissivity, true) });
@@ -903,7 +905,7 @@ function init() {
   // Ceiling gui /////////////////////
 
   var f_ceiling = f_surfaces.addFolder('Ceiling')
-  f_ceiling.add(params.ceiling, 'temperature').min(0).max(100).step(0.1)
+  f_ceiling.add(params.ceiling, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('ceiling', 'temperature', params.ceiling.temperature, false) });
   f_ceiling.add(params.ceiling, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('ceiling', 'emissivity', params.ceiling.emissivity, false) });
@@ -922,7 +924,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_ceiling.add(params.ceiling.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_ceiling.add(params.ceiling.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('ceiling', 'temperature', params.ceiling.panel.temperature, true) });
   panel_ceiling.add(params.ceiling.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('ceiling', 'emissivity', params.ceiling.panel.emissivity, true) });
@@ -943,7 +945,7 @@ function init() {
   // Floor gui /////////////////////
 
   var f_floor = f_surfaces.addFolder('Floor');
-  f_floor.add(params.floor, 'temperature').min(0).max(100).step(0.1)
+  f_floor.add(params.floor, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('floor', 'temperature', params.floor.temperature, false) });
   f_floor.add(params.floor, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('floor', 'emissivity', params.floor.emissivity, false) });
@@ -962,7 +964,7 @@ function init() {
     .onFinishChange(function(){
       do_fast_stuff();
     });
-  panel_floor.add(params.floor.panel, 'temperature').min(0).max(100).step(0.1)
+  panel_floor.add(params.floor.panel, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('floor', 'temperature', params.floor.panel.temperature, true) });
   panel_floor.add(params.floor.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('floor', 'emissivity', params.floor.panel.emissivity, true) });
@@ -1058,41 +1060,41 @@ function init() {
   gui.add(params, 'scaleMin').min(0).max(100).step(1)
     .onFinishChange(function(){ do_fast_stuff(); });
 
-  gui.add(params, 'setGlobalSurfaceTemp').min(0).max(100).step(1)
+  gui.add(params, 'setGlobalSurfaceTemp').min(tempMin).max(tempMax).step(1)
     .onFinishChange(function(){ link_temps(); });  
 
   gui.add(params, 'update');
 
   function set_panel_guis(){
-    panel_wall1_width.max(mrt.room.width);
-    panel_wall1_height.max(mrt.room.height);
-    panel_wall1_xpos.max(mrt.room.width);
-    panel_wall1_ypos.max(mrt.room.height);
+    panel_wall1_width.max(mrt.room.width - 2* panelBorderMin);
+    panel_wall1_height.max(mrt.room.height - 2* panelBorderMin);
+    panel_wall1_xpos.max(mrt.room.width - 2* panelBorderMin);
+    panel_wall1_ypos.max(mrt.room.height - 2* panelBorderMin);
 
-    panel_wall2_width.max(mrt.room.depth);
-    panel_wall2_height.max(mrt.room.height);
-    panel_wall2_xpos.max(mrt.room.depth);
-    panel_wall2_ypos.max(mrt.room.height);
+    panel_wall2_width.max(mrt.room.depth - 2* panelBorderMin);
+    panel_wall2_height.max(mrt.room.height - 2* panelBorderMin);
+    panel_wall2_xpos.max(mrt.room.depth - 2* panelBorderMin);
+    panel_wall2_ypos.max(mrt.room.height - 2* panelBorderMin);
 
-    panel_wall3_width.max(mrt.room.width);
-    panel_wall3_height.max(mrt.room.height);
-    panel_wall3_xpos.max(mrt.room.width);
-    panel_wall3_ypos.max(mrt.room.height);
+    panel_wall3_width.max(mrt.room.width - 2* panelBorderMin);
+    panel_wall3_height.max(mrt.room.height - 2* panelBorderMin);
+    panel_wall3_xpos.max(mrt.room.width - 2* panelBorderMin);
+    panel_wall3_ypos.max(mrt.room.height - 2* panelBorderMin);
 
-    panel_wall4_width.max(mrt.room.depth);
-    panel_wall4_height.max(mrt.room.height);
-    panel_wall4_xpos.max(mrt.room.depth);
-    panel_wall4_ypos.max(mrt.room.height);
+    panel_wall4_width.max(mrt.room.depth - 2* panelBorderMin);
+    panel_wall4_height.max(mrt.room.height - 2* panelBorderMin);
+    panel_wall4_xpos.max(mrt.room.depth - 2* panelBorderMin);
+    panel_wall4_ypos.max(mrt.room.height - 2* panelBorderMin);
 
-    panel_ceiling_width.max(mrt.room.width);
-    panel_ceiling_height.max(mrt.room.depth);
-    panel_ceiling_xpos.max(mrt.room.width);
-    panel_ceiling_ypos.max(mrt.room.depth);
+    panel_ceiling_width.max(mrt.room.width - 2* panelBorderMin);
+    panel_ceiling_height.max(mrt.room.depth - 2* panelBorderMin);
+    panel_ceiling_xpos.max(mrt.room.width - 2* panelBorderMin);
+    panel_ceiling_ypos.max(mrt.room.depth - 2* panelBorderMin);
 
-    panel_floor_width.max(mrt.room.width);
-    panel_floor_height.max(mrt.room.depth);
-    panel_floor_xpos.max(mrt.room.width);
-    panel_floor_ypos.max(mrt.room.depth);
+    panel_floor_width.max(mrt.room.width - 2* panelBorderMin);
+    panel_floor_height.max(mrt.room.depth - 2* panelBorderMin);
+    panel_floor_xpos.max(mrt.room.width - 2* panelBorderMin);
+    panel_floor_ypos.max(mrt.room.depth - 2* panelBorderMin);
   };
   
   function link_temps(){
