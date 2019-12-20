@@ -700,6 +700,7 @@ function init() {
   raycaster = new THREE.Raycaster();
   projector = new THREE.Projector();
 
+  // vector that points towards north
   var dir = new THREE.Vector3( 1, 0, 0 );
   var origin = new THREE.Vector3( 1, 0, -4.5 );
   var length = 3;
