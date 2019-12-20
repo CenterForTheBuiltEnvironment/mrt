@@ -13,7 +13,7 @@ mrt.room = {
     'depth': 5.0,
     'width': 10.0,
     'height': 2.6,
-}
+};
 
 params = {
     'azimuth': 0,
@@ -122,7 +122,7 @@ params = {
 };
 
 var view_factors;
-var panelBorderMin = 0.1 // minimum distance from panel edge to surface edge
+var panelBorderMin = 0.1; // minimum distance from panel edge to surface edge
 var tempMax = 300; // highest temperature you can enter in the model
 var tempMin = -30; // lowest temperature you can enter in the model
 
@@ -280,7 +280,7 @@ function set_wall_properties(){
     ];
   }
 
-};
+}
 
 function gen_zone_geometry(){
 
@@ -527,7 +527,7 @@ function render_zone(){
   var margin = {
     'x': mrt.room.width / 20,
     'y': mrt.room.depth / 20,
-  }
+  };
   var aspect_ratio = mrt.room.width / mrt.room.depth;
   var Nx = Math.floor(26.0 * aspect_ratio);
   var Ny = Math.floor(26.0 / aspect_ratio);
@@ -552,7 +552,7 @@ function render_zone(){
   // Surfaces
 
   var Np = z.length;
-  var thetax, thetaz
+  var thetax, thetaz;
   for (var i = 0; i < Np; i++){
     var p = z[i];
     var wall = wallPanelGeometry(p.vertices);
@@ -562,15 +562,15 @@ function render_zone(){
       wall.computeFaceNormals();
       var n0 = wall.faces[0].normal;
 
-      var arg = Math.pow(n0.x, 2) + Math.pow(n0.z, 2)
-      if (arg == 0){
+      var arg = Math.pow(n0.x, 2) + Math.pow(n0.z, 2);
+      if (arg === 0){
         thetay = 0;
       } else {
         thetay = Math.acos( n0.z / arg );
       }
 
-      arg = Math.pow(n0.y, 2) + Math.pow(n0.z, 2)
-      if (arg == 0){
+      arg = Math.pow(n0.y, 2) + Math.pow(n0.z, 2);
+      if (arg === 0){
         thetax = 0;
       } else {
         thetax = Math.acos( n0.z / arg );
@@ -663,12 +663,39 @@ animate();
 
 function init() {
 
+    /* the functions below are need to add tooltips to the dat.gui entries
+    code from https://stackoverflow.com/questions/27362914/how-to-add-tooltips-to-dat-gui*/
+    let eachController = function (fnc) {
+        for (var controllerName in dat.controllers) {
+            if (dat.controllers.hasOwnProperty(controllerName)) {
+                fnc(dat.controllers[controllerName]);
+            }
+        }
+    };
+
+    let setTitle = function (v) {
+        // __li is the root dom element of each controller
+        if (v) {
+            this.__li.setAttribute('title', v);
+        } else {
+            this.__li.removeAttribute('title')
+        }
+        return this;
+    };
+
+    eachController(function (controller) {
+        if (!controller.prototype.hasOwnProperty('title')) {
+            controller.prototype.title = setTitle;
+        }
+    });
+    // end functions needed to add tooltips
+
   container = document.createElement( 'div' );
   document.body.appendChild( container );
   camera = new THREE.CombinedCamera( window.innerWidth / 2, window.innerHeight / 2, 70, 1, 3000, - 500, 1000 );
-  camera.position.x = -6.0;
-  camera.position.y = 17.0;
-  camera.position.z = -6.0;
+  camera.position.x = -14.7;
+  camera.position.y = 14.7;
+  camera.position.z = -5;
   scene = new THREE.Scene();
   raycaster = new THREE.Raycaster();
   projector = new THREE.Projector();
@@ -700,9 +727,8 @@ function init() {
   // Gui
   var gui = new dat.GUI();
 
-  var f_room = gui.addFolder('Room')
-  f_room.add(mrt.room, 'width').min(2).max(100).step(1)
-    .onFinishChange(function(){
+  var f_room = gui.addFolder('Room');
+  f_room.add(mrt.room, 'width').min(2).max(100).step(1).onFinishChange(function(){
       view_factors_need_updating = true;
       set_panel_guis();
       calculate_all();
@@ -712,7 +738,7 @@ function init() {
       view_factors_need_updating = true;
       set_panel_guis();
       calculate_all();
-    })
+    });
   f_room.add(mrt.room, 'height').min(2).max(16).step(0.1)
     .onFinishChange(function(){
       view_factors_need_updating = true;
@@ -736,7 +762,7 @@ function init() {
 
   // Wall 1 gui /////////////////////
 
-  var f_wall1 = f_surfaces.addFolder('Wall 1');
+  var f_wall1 = f_surfaces.addFolder('West wall');
   f_wall1.add(params.wall1, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall1', 'temperature', params.wall1.temperature, false) });
   f_wall1.add(params.wall1, 'emissivity').min(0).max(1).step(0.01)
@@ -776,7 +802,7 @@ function init() {
 
   // Wall 2 gui /////////////////////
 
-  var f_wall2 = f_surfaces.addFolder('Wall 2');
+  var f_wall2 = f_surfaces.addFolder('North wall');
   f_wall2.add(params.wall2, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall2', 'temperature', params.wall2.temperature, false) });
   f_wall2.add(params.wall2, 'emissivity').min(0).max(1).step(0.01)
@@ -816,7 +842,7 @@ function init() {
 
   // Wall 3 gui /////////////////////
 
-  var f_wall3 = f_surfaces.addFolder('Wall 3');
+  var f_wall3 = f_surfaces.addFolder('East Wall');
   f_wall3.add(params.wall3, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){
       set_surface_property('wall3', 'temperature', params.wall3.temperature, false)
@@ -864,7 +890,7 @@ function init() {
 
   // Wall 4 gui /////////////////////
 
-  var f_wall4 = f_surfaces.addFolder('Wall 4');
+  var f_wall4 = f_surfaces.addFolder('South Wall');
   f_wall4.add(params.wall4, 'temperature').min(tempMin).max(tempMax).step(0.1)
     .onFinishChange(function(){ set_surface_property('wall4', 'temperature', params.wall4.temperature, false) });
   f_wall4.add(params.wall4, 'emissivity').min(0).max(1).step(0.01)
@@ -889,10 +915,10 @@ function init() {
   panel_wall4.add(params.wall4.panel, 'emissivity').min(0).max(1).step(0.01)
     .onFinishChange(function(){ set_surface_property('wall4', 'emissivity', params.wall4.panel.emissivity, true) });
 
-  var panel_wall4_width = panel_wall4.add(params.wall4.panel, 'width').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
-  var panel_wall4_height = panel_wall4.add(params.wall4.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
-  var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01)
-  var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01)
+  var panel_wall4_width = panel_wall4.add(params.wall4.panel, 'width').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01);
+  var panel_wall4_height = panel_wall4.add(params.wall4.panel, 'height').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01);
+  var panel_wall4_xpos = panel_wall4.add(params.wall4.panel, 'xposition').min(0.1).max(mrt.room.depth - 2 * panelBorderMin).step(0.01);
+  var panel_wall4_ypos = panel_wall4.add(params.wall4.panel, 'yposition').min(0.1).max(mrt.room.height - 2 * panelBorderMin).step(0.01);
   _.each([panel_wall4_width, panel_wall4_height, panel_wall4_xpos, panel_wall4_ypos], function(g){
     g.onFinishChange(function(){
       if (params.wall4.panel.active){
@@ -997,7 +1023,7 @@ function init() {
       mrt.occupant.azimuth = Math.PI * params.azimuth / 180;
       view_factors_need_updating = true;
       calculate_all();
-    })
+    });
 
   // Etc ... /////////////////////
 
@@ -1009,17 +1035,17 @@ function init() {
       'fbes': 0.5,
       'Idir': 700,
       'asa': 0.7,
-  }
+  };
   var solarcal_f = gui.addFolder('SolarCal');
-  solarcal_f.add(solarcal, 'alt').min(0).max(90).step(1)
+  solarcal_f.add(solarcal, 'alt').min(0).max(90).step(1).title('Solar altitude (degrees from horizontal)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'az').min(0).max(360).step(1)
+  solarcal_f.add(solarcal, 'az').min(0).max(360).step(1).title('Solar azimuth (degrees clockwise from north)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01)
+  solarcal_f.add(solarcal, 'fbes').min(0).max(1).step(0.01).title('Fraction of body exposed to sun')
     .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1)
+  solarcal_f.add(solarcal, 'Idir').min(0).max(1500).step(1).title('Direct-beam (normal) solar radiation (W/m2)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01)
+  solarcal_f.add(solarcal, 'asa').min(0).max(1).step(0.01).title('Average shortwave absorptivity')
     .onFinishChange(function(){ do_fast_stuff(); });
 
   // Comfort
@@ -1030,17 +1056,17 @@ function init() {
       'rh': 50,
       'met': 1.1,
       'clo': 0.5
-  }
-  var f_comfort = gui.addFolder('Thermal Comfort')
-  f_comfort.add(comfort, 'ta').min(0).max(50).step(0.1)
+  };
+  var f_comfort = gui.addFolder('Thermal Comfort');
+  f_comfort.add(comfort, 'ta').min(0).max(50).step(0.1).title('Dry-bulb air temperature (°C)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  f_comfort.add(comfort, 'rh').min(0).max(100).step(1)
+  f_comfort.add(comfort, 'rh').min(0).max(100).step(1).title('Relative humidity (%)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  f_comfort.add(comfort, 'vel').min(0).max(4).step(0.01)
+  f_comfort.add(comfort, 'vel').min(0).max(4).step(0.01).title('Air velocity (m/s)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  f_comfort.add(comfort, 'met').min(0).max(4).step(0.01)
+  f_comfort.add(comfort, 'met').min(0).max(4).step(0.01).title('Metabolic rate (m/s)')
     .onFinishChange(function(){ do_fast_stuff(); });
-  f_comfort.add(comfort, 'clo').min(0).max(4).step(0.01)
+  f_comfort.add(comfort, 'clo').min(0).max(4).step(0.01).title('Clothing (clo)')
     .onFinishChange(function(){ do_fast_stuff(); });
 
   gui.add(params, 'display', [
@@ -1119,7 +1145,7 @@ function init() {
     });
     
     do_fast_stuff();       
-  };
+  }
   
   // Lights
   var ambientLight = new THREE.AmbientLight( 0x999999 );

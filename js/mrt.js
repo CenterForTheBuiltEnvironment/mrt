@@ -15,7 +15,7 @@ mrt.get_fp = function(alt, az, posture){
     //  alt : altitude of sun in degrees [0, 90] Integer
     //  az : azimuth of sun in degrees [0, 180] Integer
 
-    if (posture == 'standing' | posture == 'supine'){
+    if (posture === 'standing' || posture === 'supine'){
         var fp_table = [
         /*azm=0*/   [0.348, 0.348,  0.315,  0.257,  0.204,  0.143,  0.082],
         /*azm=15*/  [0.343, 0.343,  0.312,  0.254,  0.200,  0.140,  0.082],
@@ -31,7 +31,7 @@ mrt.get_fp = function(alt, az, posture){
         /*azm=165*/ [0.343, 0.343,  0.303,  0.243,  0.189,  0.127,  0.082],
         /*azm=180*/ [0.345, 0.345,  0.308,  0.245,  0.191,  0.127,  0.082]
         ];
-    } else if (posture == 'seated'){
+    } else if (posture === 'seated'){
         var fp_table = [
         /*azm=0*/   [0.290, 0.325,  0.305,  0.305,  0.262,  0.223,  0.178],
         /*azm=15*/  [0.293, 0.328,  0.294,  0.288,  0.268,  0.225,  0.178],
@@ -49,10 +49,10 @@ mrt.get_fp = function(alt, az, posture){
         ];
     }
     
-    if (posture == 'supine') {
+    if (posture === 'supine') {
       // transpose alt and az for a supine person
       alt_temp = alt;
-      alt = Math.abs(90 - az)
+      alt = Math.abs(90 - az);
       az = alt_temp;
     }
 
@@ -63,7 +63,7 @@ mrt.get_fp = function(alt, az, posture){
     var alt_i = mrt.find_span(alt_range, alt);
     var az_i = mrt.find_span(az_range, az);
 
-    if (az_i == -1){
+    if (az_i === -1){
         console.log(alt, az)
     }
    
