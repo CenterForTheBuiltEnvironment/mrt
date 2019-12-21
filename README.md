@@ -45,6 +45,7 @@ For modeling the effects of shortwave radiation, use the SolarCal section and su
 - *az* (degrees clockwise from north): solar azimuth.
 - *fbes*: fraction of body exposed to sun.
 - *asa*: average shortwave absorptivity.
+- *Idir*: direct-beam (normal) solar radiation (W/m2).
 - *Rfloor*: floor reflectivity.
 
 SolarCal also requires Tsol, the solar transmittance of the window through which radiation is being admitted. This is a property of each window surface.

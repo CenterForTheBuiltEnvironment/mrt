@@ -52,7 +52,7 @@ psy.convert = function(x, tdb, origin, target) {
         case 'vappress':
             return a.vappress;
     }
-}
+};
 
 psy.tdb_rh = function(tdb, rh) {
     var a = {};
@@ -64,7 +64,7 @@ psy.tdb_rh = function(tdb, rh) {
     a.wetbulb = this.wetbulb(tdb, a.w);
     a.dewpoint = this.dewpoint(a.w);
     return a;
-}
+};
 
 psy.tdb_twb = function(tdb, twb) {
     var a = {};
@@ -80,7 +80,7 @@ psy.tdb_twb = function(tdb, twb) {
     a.vappress = a.rh / 100 * psat;
 
     return a;
-}
+};
 
 psy.tdb_w = function(tdb, w) {
     var a = {};
@@ -94,7 +94,7 @@ psy.tdb_w = function(tdb, w) {
     a.vappress = a.rh / 100 * psat;
 
     return a;
-}
+};
 
 psy.tdb_dewpoint = function(tdb, dewpoint) {
     var w_l = 0.00001,

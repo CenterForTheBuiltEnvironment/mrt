@@ -1,7 +1,7 @@
 function find_span(arr, x){
     // for ordered array arr and value x, find the left index
     // of the closed interval that the value falls in.
-    for (var i = 0; i < arr.length - 1; i++){
+    for (let i = 0; i < arr.length - 1; i++){
         if (x <= arr[i+1] && x >= arr[i]){
             return i;
         }
@@ -13,12 +13,13 @@ function get_fp(alt, az, posture){
     //  alt : altitude of sun in degrees [0, 90] Integer
     //  az : azimuth of sun in degrees [0, 180] Integer
 
-    if (posture == 'standing' || posture == 'supine'){
-        var fp_table = [[0.25375,0.25375,0.22765,0.18705,0.14935,0.1044,0.05945],
+    let fp_table;
+    if (posture === 'standing' || posture === 'supine'){
+        fp_table = [[0.25375,0.25375,0.22765,0.18705,0.14935,0.1044,0.05945],
             [0.24795,0.24795,0.22475,0.1827,0.145,0.1015,0.05945],
-            [0.23925,0.23925,0.2175,,0.1769,0.13775,0.0957,0.05945],
+            [0.23925,0.23925,0.2175,0.1769,0.13775,0.0957,0.05945],
             [0.22475,0.22475,0.199375,0.1653,0.126875,0.0899,0.05945],
-            [0.205175,0.205175,0.181975,0.1508,,0.116,0.08265,0.05945],
+            [0.205175,0.205175,0.181975,0.1508,0.116,0.08265,0.05945],
             [0.1827,0.1827,0.1653,0.1363,0.10875,0.0783,0.05945],
             [0.16675,0.16675,0.15515,0.1305,0.1073,0.0783,0.05945],
             [0.17545,0.17545,0.16095,0.1305,0.110925,0.0812,0.05945],
@@ -27,8 +28,8 @@ function get_fp(alt, az, posture){
             [0.2378,0.2378,0.21025,0.16965,0.132675,0.090625,0.05945],
             [0.2494,0.2494,0.2204,0.1769,0.13775,0.0928,0.05945],
             [0.251575,0.251575,0.2233,0.17835,0.138475,0.0928,0.05945]];
-    } else if (posture == 'seated'){
-        var fp_table = [[0.20184,0.225504,0.21228,0.210888,0.182352,0.155904,0.123192],
+    } else if (posture === 'seated'){
+        fp_table = [[0.20184,0.225504,0.21228,0.210888,0.182352,0.155904,0.123192],
             [0.203232,0.228288,0.204624,0.200448,0.186528,0.157992,0.123192],
             [0.200448,0.231072,0.207408,0.20184,0.183744,0.154512,0.123192],
             [0.190704,0.226896,0.204624,0.201144,0.175392,0.148944,0.123192],
@@ -46,14 +47,14 @@ function get_fp(alt, az, posture){
     if (az > 180) {
       az = 360 - az;
     }
-    if (posture == 'supine') {
+    if (posture === 'supine') {
       // transpose alt and az for a supine person
-      alt_temp = alt;
-      alt = Math.abs(90 - az)
+      let alt_temp = alt;
+      alt = Math.abs(90 - az);
       az = alt_temp;
     }
 
-    var fp;
+    let fp;
     var alt_range = [0, 15, 30, 45, 60, 75, 90];
     var az_range = [0, 15, 30, 45, 60, 75, 90, 105, 120, 135, 150, 165, 180];
     var alt_i = find_span(alt_range, alt);
@@ -95,19 +96,20 @@ function ERF(alt, az, posture, Idir, tsol, fsvv, fbes, asa, tsol_factor){
       tsol_factor = 1.0;
     }
 
-    var DEG_TO_RAD = 0.0174532925;
+    const DEG_TO_RAD = 0.0174532925;
     var hr = 6;
-    var Idiff = 0.175 * Idir * Math.sin(alt * DEG_TO_RAD);
+    var Idiff = 0.2 * Idir;
 
     // FLoor reflectance
     var Rfloor = 0.6;
     
     var fp = get_fp(alt, az, posture);
-    
-    if (posture=='standing' || posture=='supine'){
-        var feff = 0.725;
-    } else if (posture=='seated'){
-        var feff = 0.696;
+
+    let feff;
+    if (posture==='standing' || posture==='supine'){
+        feff = 0.725;
+    } else if (posture==='seated'){
+        feff = 0.696;
     } else {
         console.log("Invalid posture (choose seated, seated, or supine)");
         return;
