@@ -1,0 +1,142 @@
+// default values
+mrt.room.depth = 30
+mrt.room.width = 15
+mrt.room.height= 3.5
+params.wall1.temperature = 25
+params.wall1.emissivity = 0.9
+params.wall1.panel.window = true
+params.wall1.panel.active = true
+params.wall1.panel.emissivity = 0.9
+params.wall1.panel.height = 3
+params.wall1.panel.width = 13
+params.wall1.panel.xposition = 1
+params.wall1.panel.yposition = 0.1
+params.wall2.temperature = 25
+params.wall2.emissivity = 0.9
+params.wall3.temperature = 25
+params.wall3.emissivity = 0.9
+params.wall4.temperature = 25
+params.wall4.emissivity = 0.9
+params.ceiling.temperature = 25
+params.ceiling.emissivity = 0.9
+params.floor.temperature = 25
+params.floor.emissivity = 0.9
+comfort.ta = 25
+comfort.vel = 0.1
+comfort.rh = 50
+comfort.met = 1.1
+comfort.clo= 0.55
+solarcal.asa = 0.84
+solarcal.Idir = 900
+solarcal.az = 270
+mrt.occupant.azimuth = 0
+params.display = "PMV"
+
+// 13 reference line in the EXCEL sheet
+solarcal.fbes = 0.5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.016
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 14
+solarcal.fbes = 0.5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.03
+params.wall1.panel.temperature = 35
+calculate_all(true) // this line performs the calculations
+
+// 15
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.001
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 16
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.015
+params.wall1.panel.temperature = 35
+calculate_all(true) // this line performs the calculations
+
+// 18
+solarcal.fbes = .5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.008
+params.wall1.panel.temperature = 48
+calculate_all(true) // this line performs the calculations
+
+// 19
+solarcal.fbes = .5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.008
+params.wall1.panel.temperature = 55
+calculate_all(true) // this line performs the calculations
+
+// 20
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.008
+params.wall1.panel.temperature = 48
+calculate_all(true) // this line performs the calculations
+
+// 21
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.008
+params.wall1.panel.temperature = 55
+calculate_all(true) // this line performs the calculations
+
+// 23
+solarcal.fbes = .5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.008
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 24
+solarcal.fbes = .5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.001
+params.wall1.panel.temperature = 40
+calculate_all(true) // this line performs the calculations
+
+// 25
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.001
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 26
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.001
+params.wall1.panel.temperature = 40
+calculate_all(true) // this line performs the calculations
+
+// 28
+solarcal.fbes = .5
+mrt.occupant.posture = "seated"
+solarcal.alt = 50
+params.wall1.panel.tsol = 0.15
+params.wall1.panel.temperature = 35
+calculate_all(true) // this line performs the calculations
+
+
+
+
+
