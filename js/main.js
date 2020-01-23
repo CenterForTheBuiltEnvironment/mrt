@@ -1082,9 +1082,9 @@ function init() {
 
   gui.add(params, 'autoscale')
     .onFinishChange(function(){ do_fast_stuff(); });
-  gui.add(params, 'scaleMax').min(0).max(100).step(1)
+  gui.add(params, 'scaleMax').min(0).max(100).step(0.1)
     .onFinishChange(function(){ do_fast_stuff(); });
-  gui.add(params, 'scaleMin').min(-10).max(100).step(1)
+  gui.add(params, 'scaleMin').min(-10).max(100).step(0.1)
     .onFinishChange(function(){ do_fast_stuff(); });
 
   gui.add(params, 'setGlobalSurfaceTemp').min(tempMin).max(tempMax).step(1)
