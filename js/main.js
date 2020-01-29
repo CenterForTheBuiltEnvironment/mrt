@@ -1305,9 +1305,9 @@ function render() {
       display_value = my_pmv.pmv;
     }
     document.getElementById('occupant-position').innerHTML = "Occupant (x, y): ("
-      + intersects[0].point.x.toFixed(1) + ", " + intersects[0].point.z.toFixed(1) + ")";
+      + intersects[0].point.x.toFixed(2) + ", " + intersects[0].point.z.toFixed(2) + ")";
     document.getElementById('cursor-temperature').innerHTML = params.display + ": "
-      + display_value.toFixed(1);
+      + display_value.toFixed(2);
   } else {
     document.getElementById('cursor-temperature').innerHTML = "";
     document.getElementById('occupant-position').innerHTML = "";

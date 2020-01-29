@@ -13,6 +13,7 @@ import glob
 import os
 import matplotlib.pyplot as plt
 from pprint import pprint
+import numpy as np
 
 
 def interpolation(data_frame, value=7.5, axis='x', variable='PMV'):
@@ -27,6 +28,22 @@ def interpolation(data_frame, value=7.5, axis='x', variable='PMV'):
         result.append((value - upper) / (lower - upper) * (y_low - y_up) + y_up)
 
     return result  # return results of interpolation
+
+
+def find_min_distance(data_frame, value=0.5, axis='distance', variable='PMV'):
+    """This functions finds the minimum distance from the window by interpolating between values exported from MRT tool"""
+    unique_values = data_frame[variable].unique()  # get the coordinates in the axis
+    upper = [x for x in unique_values if x > value][0]  # find the closest values to the one selected
+    lower = [x for x in unique_values if x < value][-1]
+    closest_distance = data_frame.loc[data_frame[variable] == upper, axis].values[0]
+    further_distance = data_frame.loc[data_frame[variable] == lower, axis].values[0]
+    array_distances = np.linspace(closest_distance, further_distance, 100)
+    result = []
+    for distance in array_distances:
+        result.append([distance, (distance - closest_distance) / (further_distance - closest_distance) * (lower - upper) + upper])
+
+    _ = pd.DataFrame(result, columns=[axis, variable])
+    return _.loc[_[variable] <= 0.5, axis].min()  # return results of interpolation
 
 
 plt.close('all')
@@ -78,7 +95,7 @@ for run in runs:
     plt.close('all')
 
     # calculate the min distance from the wall
-    min_distance = df_results.loc[df_results[variable_of_interest] <= 0.5, 'distance'].min()
+    min_distance = find_min_distance(df_results, value=0.5, axis='distance', variable='PMV')
     results[run] = round(min_distance, 2)
 
 pprint(results)

@@ -136,6 +136,56 @@ params.wall1.panel.tsol = 0.15
 params.wall1.panel.temperature = 35
 calculate_all(true) // this line performs the calculations
 
+// 29
+solarcal.fbes = 0.5
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.005
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 30
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.005
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 31
+solarcal.fbes = 0.5
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.03
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 32
+solarcal.fbes = 1
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.03
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 33
+solarcal.fbes = 0.5
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.06
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+// 34
+solarcal.fbes = 0.5
+mrt.occupant.posture = "standing"
+solarcal.alt = 30
+params.wall1.panel.tsol = 0.09
+params.wall1.panel.temperature = 38
+calculate_all(true) // this line performs the calculations
+
+
+
 
 
 
