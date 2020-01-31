@@ -112,7 +112,7 @@ params = {
     'autoscale': true,
     'scaleMin': 20.0,
     'scaleMax': 40.0,
-    'setGlobalSurfaceTemp': 21,    
+    'setGlobalSurfaceTemp': 21,
     'update': function(){
       document.getElementById('calculating').style.display = "";
       setTimeout(function() {
@@ -1088,7 +1088,7 @@ function init() {
     .onFinishChange(function(){ do_fast_stuff(); });
 
   gui.add(params, 'setGlobalSurfaceTemp').min(tempMin).max(tempMax).step(1)
-    .onFinishChange(function(){ link_temps(); });  
+    .onFinishChange(function(){ link_temps(); });
 
   gui.add(params, 'update');
 
@@ -1123,7 +1123,7 @@ function init() {
     panel_floor_xpos.max(mrt.room.width - 2* panelBorderMin);
     panel_floor_ypos.max(mrt.room.depth - 2* panelBorderMin);
   };
-  
+
   function link_temps(){
     params.wall1.temperature = params.setGlobalSurfaceTemp;
     set_surface_property('wall1', 'temperature', params.wall1.temperature, false);
@@ -1139,15 +1139,15 @@ function init() {
     set_surface_property('ceiling', 'temperature', params.ceiling.temperature, false);
     params.floor.temperature = params.setGlobalSurfaceTemp;
     set_surface_property('floor', 'temperature', params.floor.temperature, false);
-     
+
     //update gui displays to match values stored in fields
     _.each([f_wall1, f_wall2, f_wall3, f_wall4, f_floor, f_ceiling], function(g){
         g.updateDisplay();
     });
-    
-    do_fast_stuff();       
+
+    do_fast_stuff();
   }
-  
+
   // Lights
   var ambientLight = new THREE.AmbientLight( 0x999999 );
   scene.add( ambientLight );
@@ -1304,9 +1304,9 @@ function render() {
       display_value = my_pmv.pmv;
     }
     document.getElementById('occupant-position').innerHTML = "Occupant (x, y): ("
-      + intersects[0].point.x.toFixed(1) + ", " + intersects[0].point.z.toFixed(1) + ")";
+      + intersects[0].point.x.toFixed(2) + ", " + intersects[0].point.z.toFixed(2) + ")";
     document.getElementById('cursor-temperature').innerHTML = params.display + ": "
-      + display_value.toFixed(1);
+      + display_value.toFixed(2);
   } else {
     document.getElementById('cursor-temperature').innerHTML = "";
     document.getElementById('occupant-position').innerHTML = "";
@@ -1337,6 +1337,7 @@ function update_view_factors(){
     }
     return vfs;
   });
+
   view_factors_need_updating = false;
 
 }
@@ -1442,7 +1443,6 @@ function calculate_erf_point(v, skydome_center, window_objects, window_object_vf
 }
 
 function update_visualization(){
-
   if (view_factors_need_updating) {
     var vertex_colors = _.map(view_factors, function(){
       return new THREE.Color(1, 1, 1);
@@ -1517,5 +1517,6 @@ function update_visualization(){
       f.vertexColors.push( vertex_colors[ idx ] );
     }
   }
+
   plane.geometry.colorsNeedUpdate = true;
 }

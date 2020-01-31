@@ -164,7 +164,7 @@ mrt.mesh_view_factor = function(mesh, d_perp, area, person_pos, person_az, postu
             var dvf = mrt.fanger_view_factor(p, d_perp, area, person_pos, person_az, posture);
             view_factor += dvf;
         }
-    } 
+    }
     return view_factor;
 };
 
@@ -335,7 +335,6 @@ mrt.calc = function(surface_vfs){
     my_mrt /= vf_emis_total;
     my_mrt = Math.pow(my_mrt, 0.25);
     my_mrt -= 273.15;
-
     return my_mrt;
 };
 
