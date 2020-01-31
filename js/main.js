@@ -1,4 +1,3 @@
-var output_data_for_ASHRAE_table = false; // by setting this variable to true the code automatically downloads the results of the calculation to a csv file so can be used later on to generate the tables for the ASHRAE 55 standard
 var container;
 var camera, scene, renderer, raycaster, projector, INTERSECTED, directionalLight;
 var surfaces = [];
@@ -1321,11 +1320,6 @@ function render() {
 
 function update_view_factors(){
 
-    // arrays that will be used to store the coordinates output_data_for_ASHRAE_table is set to true
-    let x_location = [];
-    let y_location = [];
-    let z_location = [];
-
   view_factors = _.map(plane.geometry.vertices, function(v){
     var my_vector = new THREE.Vector3();
     my_vector.copy(v);
@@ -1341,31 +1335,8 @@ function update_view_factors(){
     for (var i = 0; i < vfs.length; i++){
       vfs[i].view_factor *= norm_factor;
     }
-    if (output_data_for_ASHRAE_table) {
-        x_location.push(my_vector.x);
-        y_location.push(my_vector.y);
-        z_location.push(my_vector.z);
-    }
     return vfs;
   });
-
-    if (output_data_for_ASHRAE_table) {
-        var link = document.createElement('a');
-        link.setAttribute('href', 'data:text/plain,' + x_location.join(', '));
-        let fileName = 'location_x_fbes_' + solarcal.fbes + '_posture_' + mrt.occupant.posture + '_winTemp_' + params.wall1.panel.temperature + '_tsol_' + params.wall1.panel.tsol + '.txt';
-        link.setAttribute('download', fileName);
-        link.click();
-        var link = document.createElement('a');
-        link.setAttribute('href', 'data:text/plain,' + y_location.join(', '));
-        fileName = 'location_y_fbes_' + solarcal.fbes + '_posture_' + mrt.occupant.posture + '_winTemp_' + params.wall1.panel.temperature + '_tsol_' + params.wall1.panel.tsol + '.txt';
-        link.setAttribute('download', fileName);
-        link.click();
-        var link = document.createElement('a');
-        link.setAttribute('href', 'data:text/plain,' + z_location.join(', '));
-        fileName = 'location_z_fbes_' + solarcal.fbes + '_posture_' + mrt.occupant.posture + '_winTemp_' + params.wall1.panel.temperature + '_tsol_' + params.wall1.panel.tsol + '.txt';
-        link.setAttribute('download', fileName);
-        link.click();
-    }
 
   view_factors_need_updating = false;
 
@@ -1547,12 +1518,5 @@ function update_visualization(){
     }
   }
 
-  if (output_data_for_ASHRAE_table) {
-      var link = document.createElement('a');
-      link.setAttribute('href', 'data:text/plain,' + vertex_values.join(', '));
-      const fileName = 'value_' + params.display + '_fbes_' + solarcal.fbes + '_posture_' + mrt.occupant.posture + '_winTemp_' + params.wall1.panel.temperature + '_tsol_' + params.wall1.panel.tsol + '.txt';
-      link.setAttribute('download', fileName);
-      link.click();
-  }
   plane.geometry.colorsNeedUpdate = true;
 }
