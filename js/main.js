@@ -21,7 +21,7 @@ mrt.room = {
   height: 2.6,
 };
 
-params = {
+let params = {
   azimuth: 0,
   opacity: 0,
   wall1: {
@@ -129,8 +129,8 @@ params = {
 
 var view_factors;
 var panelBorderMin = 0.1; // minimum distance from panel edge to surface edge
-var tempMax = 300; // highest temperature you can enter in the model
-var tempMin = -30; // lowest temperature you can enter in the model
+const tempMax = 1000; // highest temperature you can enter in the model
+const tempMin = -30; // lowest temperature you can enter in the model
 
 function set_wall_properties() {
   mrt.walls = [
