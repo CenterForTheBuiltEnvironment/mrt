@@ -11,6 +11,7 @@ var mouse = new THREE.Vector2();
 
 mrt.occupant = {
   position: { x: 1, y: 1 },
+  custom_position: { x: 1.0, y: 1.0, z: 0.0 },
   azimuth: 0.0,
   posture: "seated",
 };
@@ -20,6 +21,125 @@ mrt.room = {
   width: 10.0,
   height: 2.6,
 };
+
+mrt.results = {
+  "mrt": 0,
+  "longwave_dmrt": 0,
+  "segment_data": [
+    {
+      "name": "head",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Chest",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Back",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Pelvis",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Upper Arm",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Upper Arm",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Lower Arm",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Lower Arm",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Hand",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Hand",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Thigh",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Thigh",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Lower Leg",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Lower Leg",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Left Foot",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    },
+    {
+      "name": "Right Foot",
+      "mrt": 25,
+      "longwave_mrt": 25,
+      "shortwave_dmrt": 0,
+      "shortwave": 0
+    }
+  ]
+}
 
 let params = {
   azimuth: 0,
@@ -1520,6 +1640,36 @@ function init() {
       view_factors_need_updating = true;
       calculate_all();
     });
+  
+  f_occupant
+    .add(mrt.occupant.custom_position, "x")
+    .min(0)
+    .max(mrt.room.width - 2 * panelBorderMin)
+    .step(0.1)
+    .onFinishChange(function () {
+      view_factors_need_updating = true;
+      calculate_all();
+  });
+  
+  f_occupant
+    .add(mrt.occupant.custom_position, "y")
+    .min(0)
+    .max(mrt.room.depth - 2 * panelBorderMin)
+    .step(0.1)
+    .onFinishChange(function () {
+      view_factors_need_updating = true;
+      calculate_all();
+  });
+
+  f_occupant
+    .add(mrt.occupant.custom_position, "z")
+    .min(0)
+    .max(mrt.room.height - 2 * panelBorderMin)
+    .step(0.1)
+    .onFinishChange(function () {
+      view_factors_need_updating = true;
+      calculate_all();
+  });
 
   // Etc ... /////////////////////
 
@@ -1875,6 +2025,37 @@ function get_window_object_vfs(window_objects, i) {
   return window_object_vfs;
 }
 
+function calculate_mrt_custom() {
+  if (params.display === "MRT") {
+    let point_view_factors = mrt.view_factors();
+    let longwave_mrt = mrt.calc(point_view_factors);
+
+    let window_objects = get_window_objects();
+    let my_erf;
+
+    if (window_objects) {
+      let window_object_vfs = _.map(window_objects, function (w) {
+        return _.find(point_view_factors, function (o) {
+          return o.name == w.name;
+        }).view_factor;
+      });
+      my_erf = calculate_erf_point(
+        mrt.occupant.custom_position,
+        solarcal.skydome_center,
+        window_objects,
+        window_object_vfs
+      );
+    } else {
+      my_erf = { dMRT_direct: 0, dMRT_diff: 0, dMRT_refl: 0, dMRT: 0, ERF: 0 };
+    }
+
+    let display_value = longwave_mrt + my_erf.dMRT;
+
+    mrt.results.mrt = display_value;
+    mrt.results.longwave_dmrt = longwave_mrt;
+  }
+}
+
 function render() {
   var vector = new THREE.Vector3(mouse.x, mouse.y, 1);
   projector.unprojectVector(vector, camera);
@@ -2181,3 +2362,300 @@ function update_visualization() {
   }
   plane.geometry.colorsNeedUpdate = true;
 }
+
+function generateJSON() {
+  calculate_mrt_custom();
+
+  const data = {
+    "room": {
+      "width": mrt.room.width,
+      "length": mrt.room.depth,
+      "height": mrt.room.height,
+      "north_azimuth": 0,
+    },
+    "surfaces": [
+      {
+        "name": "West wall",
+        "temperature": params.wall1.temperature,
+        "emissivity": params.wall1.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.wall1.panel.active,
+            "is_window": params.wall1.panel.window,
+            "tsol": params.wall1.panel.tsol,
+            "temperature": params.wall1.panel.temperature,
+            "emissivity": params.wall1.panel.emissivity,
+            "width": params.wall1.panel.width,
+            "height": params.wall1.panel.height,
+            "xposition": params.wall1.panel.xposition,
+            "yposition": params.wall1.panel.yposition
+          }
+        ]
+      },
+      {
+        "name": "North wall",
+        "temperature": params.wall2.temperature,
+        "emissivity": params.wall2.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.wall2.panel.active,
+            "is_window": params.wall2.panel.window,
+            "tsol": params.wall2.panel.tsol,
+            "temperature": params.wall2.panel.temperature,
+            "emissivity": params.wall2.panel.emissivity,
+            "width": params.wall2.panel.width,
+            "height": params.wall2.panel.height,
+            "xposition": params.wall2.panel.xposition,
+            "yposition": params.wall2.panel.yposition
+          }
+        ]
+      },
+      {
+        "name": "East wall",
+        "temperature": params.wall3.temperature,
+        "emissivity": params.wall3.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.wall3.panel.active,
+            "is_window": params.wall3.panel.window,
+            "tsol": params.wall3.panel.tsol,
+            "temperature": params.wall3.panel.temperature,
+            "emissivity": params.wall3.panel.emissivity,
+            "width": params.wall3.panel.width,
+            "height": params.wall3.panel.height,
+            "xposition": params.wall3.panel.xposition,
+            "yposition": params.wall3.panel.yposition
+          }
+        ]
+      },
+      {
+        "name": "South wall",
+        "temperature": params.wall4.temperature,
+        "emissivity": params.wall4.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.wall4.panel.active,
+            "is_window": params.wall4.panel.window,
+            "tsol": params.wall4.panel.tsol,
+            "temperature": params.wall4.panel.temperature,
+            "emissivity": params.wall4.panel.emissivity,
+            "width": params.wall4.panel.width,
+            "height": params.wall4.panel.height,
+            "xposition": params.wall4.panel.xposition,
+            "yposition": params.wall4.panel.yposition
+          }
+        ]
+      },
+      {
+        "name": "Ceiling",
+        "temperature": params.ceiling.temperature,
+        "emissivity": params.ceiling.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.ceiling.panel.active,
+            "is_window": params.ceiling.panel.window,
+            "tsol": params.ceiling.panel.tsol,
+            "temperature": params.ceiling.panel.temperature,
+            "emissivity": params.ceiling.panel.emissivity,
+            "width": params.ceiling.panel.width,
+            "height": params.ceiling.panel.height,
+            "xposition": params.ceiling.panel.xposition,
+            "yposition": params.ceiling.panel.yposition
+          }
+        ]
+      },
+      {
+        "name": "Floor",
+        "temperature": params.floor.temperature,
+        "emissivity": params.floor.emissivity,
+        "panels": [
+          {
+            "name": "panel",
+            "is_active": params.floor.panel.active,
+            "is_window": params.floor.panel.window,
+            "tsol": params.floor.panel.tsol,
+            "temperature": params.floor.panel.temperature,
+            "emissivity": params.floor.panel.width,
+            "height": params.floor.panel.height,
+            "xposition": params.floor.panel.xposition,
+            "yposition": params.floor.panel.yposition
+          }
+        ]
+      },
+    ],
+    "occupant": {
+      "xposition": mrt.occupant.custom_position.x,
+      "yposition": mrt.occupant.custom_position.y,
+      "zposition": mrt.occupant.custom_position.z,
+      "azimuth": mrt.occupant.azimuth,
+      "posture": mrt.occupant.posture,
+    },
+    "solar": {
+      "altitude": solarcal.alt,
+      "azimuth": solarcal.az,
+      "fbes": solarcal.fbes,
+      "ldir": solarcal.Idir,
+      "asa": solarcal.asa
+    },
+    "comfort": {
+      "ta": comfort.ta,
+      "rh": comfort.rh,
+      "vel": comfort.vel,
+      "met": comfort.met,
+      "clo": comfort.clo
+    },
+    "settings": {
+      "display": params.display,
+      "autoscale": params.autoscale,
+      "scaleMax": params.scaleMax,
+      "scaleMin": params.scaleMin,
+      "global_surface_temperature": params.setGlobalSurfaceTemp
+    },
+    "results": mrt.results
+  }
+
+  function download(filename, text) {
+    var element = document.createElement('a');
+    element.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    element.setAttribute('download', filename);
+  
+    element.style.display = 'none';
+    document.body.appendChild(element);
+  
+    element.click();
+  
+    document.body.removeChild(element);
+  }
+  
+  download("output.json", JSON.stringify(data));
+}
+
+let exportJSON = document.getElementById("exportJSON");
+exportJSON.addEventListener("click", generateJSON);
+
+document.getElementById("inputJSON").onchange = function() {
+  let fileReader = new FileReader();
+  fileReader.onload = function() {
+    let result = JSON.parse(this.result);
+
+    mrt.room.width = result.room.width
+    mrt.room.depth = result.room.length
+    mrt.room.height = result.room.height
+
+    params.wall1.temperature = result.surfaces[0].temperature
+    params.wall1.emissivity = result.surfaces[0].emissivity
+    params.wall1.panel = {
+      active: result.surfaces[0].panels[0].is_active,
+      window: result.surfaces[0].panels[0].is_window,
+      tsol: result.surfaces[0].panels[0].tsol,
+      temperature: result.surfaces[0].panels[0].temperature,
+      emissivity: result.surfaces[0].panels[0].emissivity,
+      width: result.surfaces[0].panels[0].width,
+      height: result.surfaces[0].panels[0].height,
+      xposition: result.surfaces[0].panels[0].xposition,
+      yposition: result.surfaces[0].panels[0].yposition,
+    }
+
+    params.wall2.temperature = result.surfaces[1].temperature
+    params.wall2.emissivity = result.surfaces[1].emissivity
+    params.wall2.panel = {
+      active: result.surfaces[1].panels[0].is_active,
+      window: result.surfaces[1].panels[0].is_window,
+      tsol: result.surfaces[1].panels[0].tsol,
+      temperature: result.surfaces[1].panels[0].temperature,
+      emissivity: result.surfaces[1].panels[0].emissivity,
+      width: result.surfaces[1].panels[0].width,
+      height: result.surfaces[1].panels[0].height,
+      xposition: result.surfaces[1].panels[0].xposition,
+      yposition: result.surfaces[1].panels[0].yposition,
+    }
+
+    params.wall3.temperature = result.surfaces[2].temperature
+    params.wall3.emissivity = result.surfaces[2].emissivity
+    params.wall3.panel = {
+      active: result.surfaces[2].panels[0].is_active,
+      window: result.surfaces[2].panels[0].is_window,
+      tsol: result.surfaces[2].panels[0].tsol,
+      temperature: result.surfaces[2].panels[0].temperature,
+      emissivity: result.surfaces[2].panels[0].emissivity,
+      width: result.surfaces[2].panels[0].width,
+      height: result.surfaces[2].panels[0].height,
+      xposition: result.surfaces[2].panels[0].xposition,
+      yposition: result.surfaces[2].panels[0].yposition,
+    }
+
+    params.wall4.temperature = result.surfaces[3].temperature
+    params.wall4.emissivity = result.surfaces[3].emissivity
+    params.wall4.panel = {
+      active: result.surfaces[3].panels[0].is_active,
+      window: result.surfaces[3].panels[0].is_window,
+      tsol: result.surfaces[3].panels[0].tsol,
+      temperature: result.surfaces[3].panels[0].temperature,
+      emissivity: result.surfaces[3].panels[0].emissivity,
+      width: result.surfaces[3].panels[0].width,
+      height: result.surfaces[3].panels[0].height,
+      xposition: result.surfaces[3].panels[0].xposition,
+      yposition: result.surfaces[3].panels[0].yposition,
+    }
+
+    params.ceiling.temperature = result.surfaces[4].temperature
+    params.ceiling.emissivity = result.surfaces[4].emissivity
+    params.ceiling.panel = {
+      active: result.surfaces[4].panels[0].is_active,
+      window: result.surfaces[4].panels[0].is_window,
+      tsol: result.surfaces[4].panels[0].tsol,
+      temperature: result.surfaces[4].panels[0].temperature,
+      emissivity: result.surfaces[4].panels[0].emissivity,
+      width: result.surfaces[4].panels[0].width,
+      height: result.surfaces[4].panels[0].height,
+      xposition: result.surfaces[4].panels[0].xposition,
+      yposition: result.surfaces[4].panels[0].yposition,
+    }
+
+    params.floor.temperature = result.surfaces[5].temperature
+    params.floor.emissivity = result.surfaces[5].emissivity
+    params.floor.panel = {
+      active: result.surfaces[5].panels[0].is_active,
+      window: result.surfaces[5].panels[0].is_window,
+      tsol: result.surfaces[5].panels[0].tsol,
+      temperature: result.surfaces[5].panels[0].temperature,
+      emissivity: result.surfaces[5].panels[0].emissivity,
+      width: result.surfaces[5].panels[0].width,
+      height: result.surfaces[5].panels[0].height,
+      xposition: result.surfaces[5].panels[0].xposition,
+      yposition: result.surfaces[5].panels[0].yposition,
+    }
+
+    mrt.occupant.custom_position = {
+      x: result.occupant.xposition,
+      y: result.occupant.yposition,
+      z: result.occupant.zposition
+    }
+    mrt.occupant.azimuth = result.occupant.azimuth
+    mrt.occupant.posture = result.occupant.posture
+
+    solarcal = {
+      alt: result.solar.altitude,
+      az: result.solar.azimuth,
+      fbes: result.solar.fbes,
+      Idir: result.solar.ldir,
+      asa: result.solar.asa,
+    }
+
+    comfort = result.comfort
+
+    params.display = result.settings.display
+    params.autoscale = result.settings.autoscale
+    params.scaleMax = result.settings.scaleMax
+    params.scaleMin = result.settings.scaleMin
+    params.setGlobalSurfaceTemp = result.settings.global_surface_temperature
+  };
+  fileReader.readAsText(this.files[0]);
+
+  console.log("uploaded")
+};
