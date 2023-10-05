@@ -9,6 +9,9 @@ var camera,
 var surfaces = [];
 var mouse = new THREE.Vector2();
 
+var gui;
+
+
 mrt.occupant = {
   position: { x: 1, y: 1 },
   custom_position: { x: 1.0, y: 1.0, z: 0.0 },
@@ -934,7 +937,7 @@ function init() {
   scene.add(sun);
 
   // Gui
-  var gui = new dat.GUI();
+  gui = new dat.GUI();
 
   var f_room = gui.addFolder("Room");
   f_room
@@ -2654,8 +2657,14 @@ document.getElementById("inputJSON").onchange = function() {
     params.scaleMax = result.settings.scaleMax
     params.scaleMin = result.settings.scaleMin
     params.setGlobalSurfaceTemp = result.settings.global_surface_temperature
-  };
-  fileReader.readAsText(this.files[0]);
 
-  console.log("uploaded")
+    gui.updateDisplay();
+    calculate_all(true)
+ 
+
+  };
+
+ fileReader.readAsText(this.files[0]);
+
+ console.log("uploaded")
 };
