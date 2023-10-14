@@ -2542,8 +2542,12 @@ function generateJSON() {
   
     document.body.removeChild(element);
   }
-  
-  download("output.json", JSON.stringify(data));
+
+  let exportJSONFileName = document.getElementById("exportJSONFileName")
+  const filename = exportJSONFileName.value
+
+  if (filename.length > 0) download(`${filename}.json`, JSON.stringify(data));
+  else download("output.json", JSON.stringify(data));
 }
 
 let exportJSON = document.getElementById("exportJSON");

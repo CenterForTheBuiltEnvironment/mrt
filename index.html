@@ -128,8 +128,11 @@
     <div class="scale-label" id="cursor-temperature"></div>
     <div id="calculating" style="display: none;">Calculating ... </div>
     
-    <div style="display: flex; flex-direction: column; align-items: start; justify-content: center; width: fit-content; padding: 20px; position: absolute; bottom: 0;">
-      <button id="exportJSON">Export</button>
+    <div style="display: flex; flex-direction: column; align-items: start; justify-content: center; width: fit-content; padding: 20px; position: absolute; bottom: 0; row-gap: 10px;">
+      <div style="display: flex; align-items: center; justify-content: center; flex-direction: row; column-gap: 20px;">
+        <input id="exportJSONFileName" placeholder="Enter export file name..." />
+        <button id="exportJSON">Export</button>
+      </div>
       <label>Import JSON file: <input type="file" id="inputJSON" /></label>
     </div>
 
