@@ -2057,9 +2057,9 @@ function calculate_mrt_custom() {
     mrt.results.mrt = display_value;
     mrt.results.longwave_dmrt = longwave_mrt;
 
-    for (const segment in mrt.results.segment_data) {
-      segment = {
-        ...segment,
+    for (let i = 0; i < mrt.results.segment_data.length; i++) {
+      mrt.results.segment_data[i] = {
+        ...mrt.results.segment_data[i],
         mrt: display_value,
         longwave_mrt: longwave_mrt,
       }
