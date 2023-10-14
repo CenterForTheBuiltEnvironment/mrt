@@ -23,6 +23,7 @@ mrt.room = {
   depth: 5.0,
   width: 10.0,
   height: 2.6,
+  description: "New Room"
 };
 
 mrt.results = {
@@ -970,6 +971,16 @@ function init() {
       set_panel_guis();
       calculate_all();
     });
+  f_room
+    .add(mrt.room, "description")
+    // .min(2)
+    // .max(16)
+    // .step(0.1)
+    // .onFinishChange(function () {
+      // view_factors_need_updating = true;
+      // set_panel_guis();
+    //   calculate_all();
+    // });
 
   function set_surface_property(surface_name, property, value, panel) {
     var surface = _.find(mrt.walls, function (r) {
@@ -2382,6 +2393,7 @@ function generateJSON() {
       "width": mrt.room.width,
       "length": mrt.room.depth,
       "height": mrt.room.height,
+      "description": mrt.room.description,
       "north_azimuth": 0,
     },
     "surfaces": [
@@ -2561,6 +2573,7 @@ document.getElementById("inputJSON").onchange = function() {
     mrt.room.width = result.room.width
     mrt.room.depth = result.room.length
     mrt.room.height = result.room.height
+    mrt.room.description = result.room.description
 
     params.wall1.temperature = result.surfaces[0].temperature
     params.wall1.emissivity = result.surfaces[0].emissivity
